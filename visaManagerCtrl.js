@@ -70,25 +70,49 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
         }
 
-
-
-
         
         $scope.deleteItem = (item) => {
           console.log(item);
         }
 
-        $scope.deleteGroupVisa = (groupVisa) => {
-          console.log(groupVisa);
+        $scope.deleteGroupVisa = (groupVisaId) => {
+          var dialog = $mdDialog.confirm()
+                .ok("Delete !")
+                .title('Do you want to remove it?')
+                .cancel('Cancel')
+                .clickOutsideToClose(true);
+
+                $mdDialog.show(dialog)
+                .then((result) => {
+                  visaManagerService.deleteGroupProcess(groupVisaId);
+                },() => {console.log("error")}) 
+          
         }
 
-        $scope.deleteVisaProcess = (process) => {
-          console.log(process);
+        $scope.deleteVisaProcess = (groupProcessId,processId) => {
+          var dialog = $mdDialog.confirm()
+            .ok("Delete !")
+            .title('Do you want to remove it?')
+            .cancel('Cancel')
+            .clickOutsideToClose(true);
+
+            $mdDialog.show(dialog)
+            .then((result) => {
+              visaManagerService.deleteProcess(groupProcessId,processId);
+            },() => {console.log("error")})
         }
 
 
 
-
+        $scope.SeeDetail = (visaProcessId) => {
+          $scope.seeVisaProcess.isDisplay += 1;
+          for (var i = 0; i < visaManagerService.length.length; i++) {
+            let groupVisa = visaManagerService.length[i];
+            if(groupVisa.id == visaProcessId) {
+              return groupVisa;
+            }
+          }
+        }
 
 
 

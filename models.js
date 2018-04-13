@@ -14,9 +14,9 @@ var VisaGroupModel = class VisaGroupModel extends Model {
     constructor() {
         super();
         this.add_attr({
-        id : newGuid(),
-        name : '',
-        process : []
+            id : newGuid(),
+            name : '',
+            process : []
         });
     }
 };
@@ -28,12 +28,25 @@ var ProcessModel = class ProcessModel extends Model {
     constructor() {
         super();
         this.add_attr({
-        id : newGuid(),
-        name : '',
-        color: '',
-        items : []
+            id : newGuid(),
+            name : '',
+            color: '',
+            items : [],
         });
     }
 };
 
 module.exports.ProcessModel = ProcessModel;
+
+
+var StateModel = class StateModel extends Model {
+    constructor() {
+        super();
+        this.add_attr({
+            groupId : "",
+            stateId : ""
+        });
+    }
+};
+
+module.exports.StateModel = StateModel;

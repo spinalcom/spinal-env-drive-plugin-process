@@ -1,0 +1,42 @@
+<style>
+    .myContainer {
+        padding-top : 20px;
+    }
+</style>
+
+<md-dialog aria-label="addLink" style="padding : 30px;">
+    <h3>Progress In Validation</h3>
+    <form ng-cloak>
+
+        <md-dialog-content class="myContainer">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Group Visa Process</label>
+                <md-select ng-model="visaSelected.groupId" ng-change="SelectChanged()">
+                    <md-option ng-repeat="group in groupProcess" value="{{group.id}}">
+                    {{group.name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Visa Process</label>
+                <md-select ng-disabled="isDisabled" ng-model="visaSelected.processId">
+                    <md-option ng-repeat="process in processes.process" value="{{process.id}}">
+                        <ng-md-icon icon="label" ng-attr-style="fill: {{process.color}};height: 24px;"></ng-md-icon>
+                        {{process.name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel()">
+            Cancel
+            </md-button>
+            <md-button ng-click="answer()" class="md-primary">
+            OK
+            </md-button>
+        </md-dialog-actions>
+
+    </form>
+</md-dialog>

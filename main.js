@@ -1,8 +1,17 @@
+import { Add_Item } from "./add_item";
 
-
+require("spinal-env-drive-core");
 require("./models");
 require("./visaManagerService");
 require("./visaManagerCtrl");
+require("./add_item");
+
+// function concat_lib(lib) {
+//   for (var key in lib) {
+//     module.exports[key] = lib[key];
+//   }
+// }
+
 
 
 (function () {
@@ -19,6 +28,9 @@ require("./visaManagerCtrl");
         let toload = [{
           uri: '../templates/spinal-env-visa/visa-template.html',
           name: 'visa-template.html'
+        },{
+          uri: '../templates/spinal-env-visa/addItemDialogTemplate.html',
+          name : 'addItemDialogTemplate.html'
         }];
         for (var i = 0; i < toload.length; i++) {
           load_template(toload[i].uri, toload[i].name);
@@ -40,6 +52,10 @@ require("./visaManagerCtrl");
             }
           }
         });
+
+        spinalDrive_Env.add_applications('FileExplorer', new SpinalDrive_App_FileExplorer_addItem());
+
+        
 
       }]);
 
