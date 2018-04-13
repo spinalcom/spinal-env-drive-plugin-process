@@ -1,0 +1,96 @@
+
+
+<style>
+    .md-fab {   
+        width: 40px;    
+        height: 40px;   
+        padding: 0;  
+    }
+</style>
+
+
+<div ng-if="seeVisaProcess.isDisplay == 0">
+    <div class="header_button">
+        <md-button class="md-fab" aria-label="add groupProcess" ng-click="addGroupProcess()">
+            <md-tooltip>Add Process</md-tooltip>
+            <ng-md-icon icon="note_add" style="fill:white; height: 24px;"></ng-md-icon>
+        </md-button>
+    </div>
+
+    <div class="visaContainer">
+        <md-list>
+            <md-list-item ng-repeat="visaProcess in allVisaProcess" ng-click="viewAllProcess(visaProcess)">
+                <p>{{visaProcess.name}}</p>
+
+                <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </md-button>
+
+            </md-list-item>        
+        </md-list>
+    </div>
+</div>
+
+<!-- *************************************  See Process  ********************************************** -->
+
+<div ng-if="seeVisaProcess.isDisplay == 1">
+    <div class="header_button">
+        <md-button class="md-fab" aria-label="add groupProcess" ng-click="addProcessInGroup()">
+            <md-tooltip>Add Process</md-tooltip>
+            <ng-md-icon icon="note_add" style="fill:white; height: 24px;"></ng-md-icon>
+        </md-button>
+    </div>
+
+    <div class="header_back">
+        <md-button ng-click="goBack()">
+            <i class="fa fa-arrow-left"></i>
+            &nbsp;
+            back
+        </md-button>
+    </div>
+
+    <md-list>
+        <md-list-item ng-if="seeVisaProcess.visaselected.process.length > 0" ng-repeat="process in seeVisaProcess.visaselected.process" ng-click="seeAllItems(process)">
+            <p>{{process.name}}</p>
+
+            <md-button colorpicker ng-model="process.color" class="color_pick" ng-attr-style="background : {{process.color}}" name="{{process.id}}" aria-label="Select Color"></md-button>
+
+            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </md-button>
+            
+        </md-list-item>
+
+        <md-list-item ng-if="seeVisaProcess.visaselected.process.length == 0">
+            No Process found !
+        </md-list-item>
+
+    </md-list>
+</div>
+
+<!-- *************************************  See Items  ********************************************** -->
+
+<div ng-if="seeVisaProcess.isDisplay == 2">
+    <div class="header">
+        <md-button ng-click="goBack()">
+            <i class="fa fa-arrow-left"></i>
+            &nbsp;
+            back
+        </md-button>
+    </div>
+
+    <md-list>
+        <md-list-item ng-if="seeVisaProcess.processSelected.items.length > 0" ng-repeat="item in seeVisaProcess.processSelected.items">
+            <p>{{item.name}}</p>
+
+            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </md-button>
+
+        </md-list-item>
+
+        <md-list-item ng-if="seeVisaProcess.processSelected.items.length == 0">
+            No item found
+        </md-list-item>
+    </md-list>
+</div>
