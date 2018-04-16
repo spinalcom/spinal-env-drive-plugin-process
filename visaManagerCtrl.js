@@ -53,8 +53,13 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
             $scope.seeVisaProcess.visaselected = visaProcess;
         }
 
-        $scope.goBack = () => {
-          $scope.seeVisaProcess.isDisplay -= 1;
+        $scope.goBack = (home = undefined) => {
+          if(home != undefined) {
+            $scope.seeVisaProcess.isDisplay = 0;
+          } else {
+            $scope.seeVisaProcess.isDisplay -= 1;
+          }
+          
         }
 
         $scope.seeAllItems = (argProcess) => {

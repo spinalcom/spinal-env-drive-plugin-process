@@ -30,6 +30,11 @@
                     <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
                 </md-button>
 
+                <!--********************************  Revoir ****************************-->
+                <md-button class="i_btn" aria-label="remove_item" ng-click="">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </md-button>
+
             </md-list-item>
             
             <md-list-item ng-if="allVisaProcess.length == 0">
@@ -63,9 +68,15 @@
             <p>{{process.name}}</p>
 
             <md-button colorpicker ng-model="process.color" class="color_pick" ng-attr-style="background : {{process.color}}" name="{{process.id}}" aria-label="Select Color"></md-button>
-
+            
             <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.visaselected.id,process.id)">
                 <i class="fa fa-trash" aria-hidden="true"></i>
+            </md-button>
+
+
+            <!--********************************  Revoir ****************************-->
+            <md-button class="i_btn" aria-label="remove_item" ng-click="">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
             </md-button>
             
         </md-list-item>
@@ -92,9 +103,9 @@
         <md-list-item ng-if="seeVisaProcess.processSelected.items.length > 0" ng-repeat="item in seeVisaProcess.processSelected.items">
             <p>{{item.name}}</p>
 
-            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
+            <!-- <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
                 <i class="fa fa-trash" aria-hidden="true"></i>
-            </md-button>
+            </md-button> -->
 
         </md-list-item>
 
@@ -106,7 +117,7 @@
 
 <div ng-if="seeVisaProcess.isDisplay == 3">
     <div class="header">
-        <md-button ng-click="goBack()">
+        <md-button ng-click="goBack('home')">
             <i class="fa fa-arrow-left"></i>
             &nbsp;
             back
