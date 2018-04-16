@@ -113,8 +113,34 @@
         </md-button>
     </div>
 
-    
-    
-        
+    <div>
+        <table style="table-layout: fixed; min-width: 400px; width: 94%; max-height: 100%; margin-left:3%; margin-right: 3%">
+            <thead style=" border-bottom: 1px solid #ddd;">
+              <tr style="height: 25px; border-top: 1px;">
+                <th style="width: 33%;">Name</th>
+                <th style="width: 33%;">States</th>
+                <th style="width: 33%;">Date</th>
+              </tr>
+            </thead>
+
+            <tbody ng-repeat="process in references.process">
+              <!-- <tr style="height:35px; margin-bottom: 10px;margin-top: 10px; background: gray;">
+                  <td><h5>{{process.name}}</h5></td>
+                  <td></td>
+                  <td></td>
+              </tr> -->
+              <tr ng-if="process.items.length > 0" ng-repeat="item in process.items" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                <td>{{item.name}}</td>
+                <td><div ng-style="{width: '40px', height: '20px', background: process.color}"></div></td>
+                <td>{{getDate(item._info.visaProcessPlugin._server_id) | date:"MM/dd/yyyy 'at' h:mma" }}</td>
+              </tr>
+              <!-- <tr ng-if="process.items.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                <td>No item in this state</td>
+                <td></td>
+                <td></td>
+              </tr> -->
+            </tbody>
+        </table>    
+    </div>   
 
 </div>

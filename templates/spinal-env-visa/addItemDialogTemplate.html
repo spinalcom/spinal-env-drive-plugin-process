@@ -18,7 +18,11 @@
                 </md-select>
             </md-input-container>
 
-            <md-input-container class="md-block" flex-gt-sm>
+            <md-button ng-if="!disableButton.precedent" class="md-raised md-primary" ng-click="precedent()">Precedent</md-button>
+            <md-button ng-if="!disableButton.next" class="md-raised md-primary" ng-click="next()">Next</md-button>
+            <md-button ng-if="!disableButton.add" class="md-raised md-primary" ng-click="add()">Add</md-button>
+
+            <!-- <md-input-container class="md-block" flex-gt-sm>
                 <label>Visa Process</label>
                 <md-select ng-disabled="isDisabled" ng-model="visaSelected.processId">
                     <md-option ng-repeat="process in processes.process" value="{{process.id}}">
@@ -26,16 +30,16 @@
                         {{process.name}}
                     </md-option>
                 </md-select>
-            </md-input-container>
+            </md-input-container> -->
         </md-dialog-content>
 
         <md-dialog-actions layout="row">
             <md-button ng-click="cancel()">
             Cancel
             </md-button>
-            <md-button ng-click="answer()" class="md-primary">
+            <!-- <md-button ng-click="answer()" class="md-primary">
             OK
-            </md-button>
+            </md-button> -->
         </md-dialog-actions>
 
     </form>

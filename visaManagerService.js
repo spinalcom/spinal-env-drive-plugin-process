@@ -22,15 +22,15 @@ angular.module("app.spinal-panel")
             var visaGroup = new VisaGroupModel();
             visaGroup.name.set(name);
 
-            var processValid = new ProcessModel();
+            var processValid = new ProcessModel(2);
             processValid.name.set("Valid");
             processValid.color.set("#008348");
 
-            var processWarning = new ProcessModel();
+            var processWarning = new ProcessModel(1);
             processWarning.name.set("Validation in progress");
             processWarning.color.set("#FFEB56");
 
-            var processInvalid = new ProcessModel();
+            var processInvalid = new ProcessModel(0);
             processInvalid.name.set("Invalid");
             processInvalid.color.set("#F21B2C");
 
@@ -90,7 +90,7 @@ angular.module("app.spinal-panel")
 
 
 
-        factory.addItem = (item,groupId,processId) => {
+        factory.addItem = (item,groupId,processId,priority) => {
             
             let mod = FileSystem._objects[item];
             if(mod) {
@@ -107,19 +107,30 @@ angular.module("app.spinal-panel")
                 // factory.itemList.push({visaGroupId : groupId,visaProcessId : processId})
 
                 if(mod._info.visaProcessPlugin) {
-                    mod.load((data) => {
-                        factory.items = data;
+                    mod._info.visaProcessPlugin.load((data) => {
+                        
+                        var myItem = new StateModel(priority);
+
+                        myItem.groupId.set(groupId);
+                        myItem.stateId.set(processId);
+                        myItem.priority.set(priority);
+                        myItem.date.set(Date.now());
+
+                        data.push(myItem);
                     })
                 } else {
-                    factory.items = new StateModel();
+                    factory.items = new Lst();
                     mod._info.add_attr({
                         visaProcessPlugin: new Ptr(factory.items)
                     })
-                }
+                    var myItem = new StateModel(priority);
+                    myItem.groupId.set(groupId);
+                    myItem.stateId.set(processId);
+                    myItem.date.set(Date.now());
 
-                factory.items.groupId.set(groupId);
-                factory.items.stateId.set(processId);
-
+                    factory.items.push(myItem);
+                    
+                }    
             
                 for (var i = 0; i < factory.allProcess.length; i++) {
                     var groupVisa = factory.allProcess[i]
@@ -139,6 +150,66 @@ angular.module("app.spinal-panel")
    
         }
 
+
+        factory.deleteItem = (item,groupId,processId,priority) => {
+
+
+            
+
+            let mod = FileSystem._objects[item];
+            if(mod) {
+
+                for (var i = 0; i < factory.allProcess.length; i++) {
+                    var groupVisa = factory.allProcess[i]
+                    if(groupVisa.id == groupId) {
+                        for (var j = 0; j < groupVisa.process.length; j++) {
+                            var process = groupVisa.process[j];
+                            if(process.priority == priority) {
+                                var itemList = factory.allProcess[i].process[j].items;
+                                console.log();
+                                for (var k = 0; k < itemList.length; k++) {
+                                    console.log("process.items[k]._server_id",itemList[k]._server_id)
+                                    console.log("item",item);
+
+                                    if(itemList[k]._server_id == item) {
+                                        console.log("condition 3 exact");
+                                        factory.allProcess[i].process[j].items.splice(k,1);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                if(mod._info.visaProcessPlugin) {
+                    mod._info.visaProcessPlugin.load((data) => {
+                        for (var i = 0; i < data.length; i++) {
+                            var x = data[i];
+
+                            console.log("x.groupId",x.groupId.get(),"groupId",groupId)
+                            console.log("x.stateId",x.stateId.get(),"processId",processId)
+                            console.log("x.priority",x.priority.get(),"priority",priority)
+
+                            if(x.groupId.get() == groupId && x.priority.get() == priority) {
+                                console.log("all condition exact")
+                                data.splice(i,1);
+                                break;
+                            }
+                        }
+                    })
+                }
+
+               
+               
+            } else {
+                console.log("mod null")
+            }
+
+
+        }
         
         return factory;
 

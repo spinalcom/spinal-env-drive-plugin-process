@@ -25,13 +25,14 @@ module.exports.VisaGroupModel = VisaGroupModel;
 
 
 var ProcessModel = class ProcessModel extends Model {
-    constructor() {
+    constructor(argPriority) {
         super();
         this.add_attr({
             id : newGuid(),
             name : '',
             color: '',
             items : [],
+            priority : argPriority
         });
     }
 };
@@ -40,11 +41,13 @@ module.exports.ProcessModel = ProcessModel;
 
 
 var StateModel = class StateModel extends Model {
-    constructor() {
+    constructor(argPriority) {
         super();
         this.add_attr({
             groupId : "",
-            stateId : ""
+            stateId : "",
+            priority : argPriority,
+            date : 0
         });
     }
 };

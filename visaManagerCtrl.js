@@ -7,6 +7,8 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
         $scope.seeVisaProcess = {visaselected : null, processSelected : null, isDisplay : 0};
 
+        $scope.references;
+
         visaManagerService.allProcess.bind(() => {
           ngSpinalCore.store(visaManagerService.allProcess,"/__process__/");
           $scope.allVisaProcess = visaManagerService.allProcess;
@@ -72,7 +74,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
         
         $scope.deleteItem = (item) => {
-          console.log(item);
+          
         }
 
         $scope.deleteGroupVisa = (groupVisaId) => {
@@ -85,7 +87,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
                 $mdDialog.show(dialog)
                 .then((result) => {
                   visaManagerService.deleteGroupProcess(groupVisaId);
-                },() => {console.log("error")}) 
+                },() => {console.log("error")})
           
         }
 
@@ -105,18 +107,27 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
 
         $scope.SeeDetail = (visaProcessId) => {
-          $scope.seeVisaProcess.isDisplay += 1;
-          for (var i = 0; i < visaManagerService.length.length; i++) {
-            let groupVisa = visaManagerService.length[i];
+          $scope.seeVisaProcess.isDisplay = 3;
+          for (var i = 0; i < visaManagerService.allProcess.length; i++) {
+            let groupVisa = visaManagerService.allProcess[i];
             if(groupVisa.id == visaProcessId) {
-              return groupVisa;
+              
+              $scope.references = groupVisa;
+              // console.log($scope.references.process)
             }
           }
         }
 
-
-
-
+        $scope.getDate = function(id) {
+          let mod = FileSystem._objects[id];
+          if(mod) {
+            return mod.load((data) => {
+              // // return data.date.get()
+              // console.log(data);
+              return Date.now();
+            })
+          }
+        }
 
 }])
 
