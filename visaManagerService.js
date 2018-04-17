@@ -41,22 +41,48 @@ angular.module("app.spinal-panel")
             factory.allProcess.push(visaGroup);
         }
 
-
         
-        factory.addProcessInGroup = (groupId,name) => {
-            var newVisaProcess = new ProcessModel();
-            newVisaProcess.name.set(name);
-            newVisaProcess.color.set("#000000");
-            for (var i = 0; i < factory.allProcess.length; i++) {
-                let visaProcess = factory.allProcess[i];
+        factory.addProcessInGroup = (groupId,name,place,priority) => {
+            var myPriority = null;
 
-                if(visaProcess.id == groupId) {
-                    factory.allProcess[i].process.push(newVisaProcess);
-                    break;
+            if(place == '0') {
+                myPriority = parseInt(priority);
+            } else if(place == '1') {
+                myPriority = parseInt(priority) + 1;
+            }        
+            
+            
+            console.log(myPriority)
+
+
+            if(myPriority != null) {
+                var newVisaProcess = new ProcessModel(myPriority);
+                newVisaProcess.name.set(name);
+                newVisaProcess.color.set("#000000");
+
+                
+                for (var i = 0; i < factory.allProcess.length; i++) {
+                    let visaProcess = factory.allProcess[i];
+
+                    if(visaProcess.id == groupId) {
+
+                        for (var j = 0; j < visaProcess.process.length; j++) {
+                            
+                            console.log("visaProcess.process[j].priority",visaProcess.process[j].priority.get())
+                            console.log("myPriority",myPriority);
+
+                            if(visaProcess.process[j].priority.get() >= myPriority) {
+                                console.log("condition true");
+                                factory.allProcess[i].process[j].priority.set(parseInt(factory.allProcess[i].process[j].priority) + 1);
+                            }
+                        }
+
+                        factory.allProcess[i].process.push(newVisaProcess);
+                        break;
+                    }
                 }
             }
         }
-
 
 
         factory.deleteGroupProcess = (groupProcessId) => {
@@ -69,9 +95,8 @@ angular.module("app.spinal-panel")
             }
         }
         
-        
 
-        factory.deleteProcess = (groupProcessId,processId) => {
+        factory.deleteProcess = (groupProcessId,processId,priority) => {
             for (var i = 0; i < factory.allProcess.length; i++) {
                 var groupProcess = factory.allProcess[i];
                 if(groupProcess.id == groupProcessId) {
@@ -79,7 +104,10 @@ angular.module("app.spinal-panel")
                         let process = groupProcess.process[j];
                         if(process.id == processId) {
                             factory.allProcess[i].process.splice(j,1);
-                            break;
+                        }
+
+                        if(process.priority > priority) {
+                            factory.allProcess[i].process[j].priority.set(parseInt(factory.allProcess[i].process[j].priority) - 1)
                         }
                         
                     }
@@ -87,7 +115,6 @@ angular.module("app.spinal-panel")
                 }
             }
         }
-
 
 
         factory.addItem = (item,groupId,processId,priority) => {
@@ -112,7 +139,7 @@ angular.module("app.spinal-panel")
                         var myItem = new StateModel(priority);
 
                         myItem.groupId.set(groupId);
-                        myItem.stateId.set(processId);
+                        myItem.processId.set(processId);
                         myItem.priority.set(priority);
                         myItem.date.set(Date.now());
 
@@ -125,7 +152,7 @@ angular.module("app.spinal-panel")
                     })
                     var myItem = new StateModel(priority);
                     myItem.groupId.set(groupId);
-                    myItem.stateId.set(processId);
+                    myItem.processId.set(processId);
                     myItem.date.set(Date.now());
 
                     factory.items.push(myItem);
@@ -190,7 +217,7 @@ angular.module("app.spinal-panel")
                             var x = data[i];
 
                             console.log("x.groupId",x.groupId.get(),"groupId",groupId)
-                            console.log("x.stateId",x.stateId.get(),"processId",processId)
+                            console.log("x.processId",x.processId.get(),"processId",processId)
                             console.log("x.priority",x.priority.get(),"priority",priority)
 
                             if(x.groupId.get() == groupId && x.priority.get() == priority) {

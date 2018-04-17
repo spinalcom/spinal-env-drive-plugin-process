@@ -6,13 +6,6 @@ require("./visaManagerService");
 require("./visaManagerCtrl");
 require("./add_item");
 
-// function concat_lib(lib) {
-//   for (var key in lib) {
-//     module.exports[key] = lib[key];
-//   }
-// }
-
-
 
 (function () {
   angular.module('app.spinal-panel')
@@ -25,12 +18,16 @@ require("./add_item");
             console.log('Cannot load the file ' + uri);
           });
         };
+        
         let toload = [{
           uri: '../templates/spinal-env-visa/visa-template.html',
           name: 'visa-template.html'
         },{
           uri: '../templates/spinal-env-visa/addItemDialogTemplate.html',
           name : 'addItemDialogTemplate.html'
+        },{
+          uri : '../templates/spinal-env-visa/addProcessTemplate.html',
+          name : 'addProcessTemplate.html'
         }];
         for (var i = 0; i < toload.length; i++) {
           load_template(toload[i].uri, toload[i].name);

@@ -29,17 +29,16 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
     // let $scope =  obj.scope.injector.get('$scope');
     let $templateCache = obj.scope.injector.get('$templateCache');
     let visaManagerService = obj.scope.injector.get('visaManagerService');
-
     let mod = FileSystem._objects[obj.file._server_id];
 
     $mdDialog.show({
 
         controller : ["$scope","$mdDialog","visaManagerService",($scope,$mdDialog,visaManagerService) => {
             
-/******************************************************************************** */
+            /******************************************************************************** */
 
             $scope.getIdByPriority = function(themeId,priority) {
-
+                
                 for (var i = 0; i < $scope.groupProcess.length; i++) {
                     let myGroupProcess = $scope.groupProcess[i];
                     if(myGroupProcess.id == themeId) {
@@ -53,22 +52,25 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
                 }
             }
 
-/*********************************************************************************** */
+            /*********************************************************************************** */
 
 
             $scope.groupProcess = visaManagerService.allProcess;
             $scope.visaSelected = {groupId : '0', processId : '0',priority : 0,oldPriority : 0};
             $scope.processes = [];
-
             $scope.disableButton = {precedent : true, next : true, add : true}
+            $scope.display = false;
+            
 
 
             $scope.SelectChanged = function() {
-
+                $scope.stateVisaProcess = {precedentState : null,currentState : null, nextState : null}
+                
                 for (var i = 0; i < $scope.groupProcess.length; i++) {
                     let process = $scope.groupProcess[i];
                     if(process.id == $scope.visaSelected.groupId) {
                         $scope.processes = process;
+                        $scope.display = true;
                         var exist = false;
                         if(mod._info.visaProcessPlugin) {
                             mod._info.visaProcessPlugin.load((data) => {
@@ -78,12 +80,16 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
                                         exist = true;
                                         $scope.visaSelected.priority = data[j].priority.get();
 
+                                        $scope.stateVisaProcess.currentState = data[j].priority.get();
+
                                         if(data[j].priority.get() > 0) {
-                                            $scope.disableButton.precedent = false;                        
+                                            $scope.disableButton.precedent = false;
+                                            $scope.stateVisaProcess.precedentState = data[j].priority.get() - 1;                        
                                         }
                                         
                                         if(data[j].priority.get() < $scope.processes.process.length - 1)  {
                                             $scope.disableButton.next = false;
+                                            $scope.stateVisaProcess.nextState = data[j].priority.get() + 1;
                                         }
                                         break;
                                     }
@@ -137,13 +143,14 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
                 $mdDialog.hide({name : 'precedent', data : $scope.visaSelected})
             }
 
-            // $scope.answer = function() {
-            //     if($scope.visaSelected.groupId != '0' && $scope.visaSelected.processId != '0') {
-            //         $mdDialog.hide($scope.visaSelected);
-            //     } else {
-            //         $mdDialog.cancel();
-            //     }
-            // }
+            $scope.getStateName = function(priority) {
+                for (var i = 0; i < $scope.processes.process.length; i++) {
+                    var process = $scope.processes.process[i];
+                    if(process.priority == priority) {
+                        return process.name
+                    }
+                }
+            }
 
 
         }],
@@ -174,44 +181,6 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
    }
 
 
-    // dialogCtrl($scope,$mdDialog,visaManagerService) {
-    //     $scope.groupProcess = visaManagerService.allProcess;
-    //     $scope.visaSelected = {groupId : '0', processId : '0'};
-    //     $scope.processes = [];
-
-    //     $scope.isDisabled = true;
-
-    //     $scope.SelectChanged = function() {
-    //         $scope.isDisabled = false;
-    //         $scope.visaSelected.processId = '0';
-    //         for (var i = 0; i < $scope.groupProcess.length; i++) {
-    //             let process = $scope.groupProcess[i];
-    //             if(process.id == $scope.visaSelected.groupId) {
-    //                 $scope.processes = process;
-    //                 break;
-    //             }
-
-    //         }
-    //     }
-
-
-    //     $scope.hide = function() {
-    //         $mdDialog.hide()
-    //     }
-
-    //     $scope.cancel = function() {
-    //         $mdDialog.cancel()
-    //     }
-
-    //     $scope.answer = function() {
-    //         if($scope.visaSelected.groupId != '0' && $scope.visaSelected.processId != '0') {
-    //             $mdDialog.hide($scope.visaSelected);
-    //         } else {
-    //             $mdDialog.cancel();
-    //         }
-    //     }
-
-    // }
    
 }
 

@@ -45,7 +45,7 @@ var StateModel = class StateModel extends Model {
         super();
         this.add_attr({
             groupId : "",
-            stateId : "",
+            processId : "",
             priority : argPriority,
             date : 0
         });

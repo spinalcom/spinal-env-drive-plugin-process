@@ -18,6 +18,12 @@
                 </md-select>
             </md-input-container>
 
+            <div ng-if="display">
+                <div ng-if="stateVisaProcess.currentState != null"><span>current state : </span> <span style="text-align: right">{{getStateName(stateVisaProcess.currentState)}}</span></div>
+                <div ng-if="stateVisaProcess.precedentState != null"><span>Precedent state : </span> <spanstyle="text-align: right">{{getStateName(stateVisaProcess.precedentState)}}</span></div>
+                <div ng-if="stateVisaProcess.nextState != null"><span>next state : </span> <span style="text-align: right">{{getStateName(stateVisaProcess.nextState)}}</span></div>
+            </div>
+
             <md-button ng-if="!disableButton.precedent" class="md-raised md-primary" ng-click="precedent()">Precedent</md-button>
             <md-button ng-if="!disableButton.next" class="md-raised md-primary" ng-click="next()">Next</md-button>
             <md-button ng-if="!disableButton.add" class="md-raised md-primary" ng-click="add()">Add</md-button>
