@@ -1,10 +1,10 @@
-import { Add_Item } from "./add_item";
-
+require("./spectrum");
 require("spinal-env-drive-core");
 require("./models");
 require("./visaManagerService");
 require("./visaManagerCtrl");
 require("./add_item");
+require("./color.directive");
 
 
 (function () {
@@ -18,7 +18,7 @@ require("./add_item");
             console.log('Cannot load the file ' + uri);
           });
         };
-        
+
         let toload = [{
           uri: '../templates/spinal-env-visa/visa-template.html',
           name: 'visa-template.html'

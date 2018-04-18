@@ -136,26 +136,37 @@ angular.module("app.spinal-panel")
                 if(mod._info.visaProcessPlugin) {
                     mod._info.visaProcessPlugin.load((data) => {
                         
-                        var myItem = new StateModel(priority);
 
-                        myItem.groupId.set(groupId);
-                        myItem.processId.set(processId);
-                        myItem.priority.set(priority);
-                        myItem.date.set(Date.now());
+                        data.groupId.set(groupId);
+                        data.processId.set(processId);
+                        data.priority.set(priority);
+                        data.date.set(Date.now());
 
-                        data.push(myItem);
+                        // var myItem = new StateModel(priority);
+                        // myItem.groupId.set(groupId);
+                        // myItem.processId.set(processId);
+                        // myItem.priority.set(priority);
+                        // myItem.date.set(Date.now());
+                        // data.push(myItem);
                     })
                 } else {
-                    factory.items = new Lst();
+                    // factory.items = new Lst();
+
+                    factory.items = new StateModel(priority);
+                    factory.items.groupId.set(groupId);
+                    factory.items.processId.set(processId);
+                    factory.items.priority.set(priority);
+                    factory.items.date.set(Date.now());
+
                     mod._info.add_attr({
                         visaProcessPlugin: new Ptr(factory.items)
                     })
-                    var myItem = new StateModel(priority);
-                    myItem.groupId.set(groupId);
-                    myItem.processId.set(processId);
-                    myItem.date.set(Date.now());
+                    // var myItem = new StateModel(priority);
+                    // myItem.groupId.set(groupId);
+                    // myItem.processId.set(processId);
+                    // myItem.date.set(Date.now());
 
-                    factory.items.push(myItem);
+                    // factory.items.push(myItem);
                     
                 }    
             
@@ -193,13 +204,8 @@ angular.module("app.spinal-panel")
                             var process = groupVisa.process[j];
                             if(process.priority == priority) {
                                 var itemList = factory.allProcess[i].process[j].items;
-                                console.log();
                                 for (var k = 0; k < itemList.length; k++) {
-                                    console.log("process.items[k]._server_id",itemList[k]._server_id)
-                                    console.log("item",item);
-
                                     if(itemList[k]._server_id == item) {
-                                        console.log("condition 3 exact");
                                         factory.allProcess[i].process[j].items.splice(k,1);
                                         break;
                                     }
@@ -211,23 +217,19 @@ angular.module("app.spinal-panel")
                     }
                 }
 
-                if(mod._info.visaProcessPlugin) {
-                    mod._info.visaProcessPlugin.load((data) => {
-                        for (var i = 0; i < data.length; i++) {
-                            var x = data[i];
+                // if(mod._info.visaProcessPlugin) {
+                //     mod._info.visaProcessPlugin.load((data) => {
+                //         for (var i = 0; i < data.length; i++) {
+                //             var x = data[i];
 
-                            console.log("x.groupId",x.groupId.get(),"groupId",groupId)
-                            console.log("x.processId",x.processId.get(),"processId",processId)
-                            console.log("x.priority",x.priority.get(),"priority",priority)
-
-                            if(x.groupId.get() == groupId && x.priority.get() == priority) {
-                                console.log("all condition exact")
-                                data.splice(i,1);
-                                break;
-                            }
-                        }
-                    })
-                }
+                //             if(x.groupId.get() == groupId && x.priority.get() == priority) {
+                //                 console.log("all condition exact")
+                //                 data.splice(i,1);
+                //                 break;
+                //             }
+                //         }
+                //     })
+                // }
 
                
                

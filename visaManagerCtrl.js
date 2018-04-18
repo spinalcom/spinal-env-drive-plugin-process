@@ -8,12 +8,12 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         $scope.seeVisaProcess = {visaselected : null, processSelected : null, isDisplay : 0};
 
         $scope.references;
+        $scope.color;
 
         visaManagerService.allProcess.bind(() => {
           ngSpinalCore.store(visaManagerService.allProcess,"/__process__/");
           $scope.allVisaProcess = visaManagerService.allProcess;
         })
-
 
 
         $scope.addGroupProcess = () => {
@@ -80,13 +80,19 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
 
         $scope.SeeDetail = (visaProcessId) => {
+
+          $scope.references = [];
+
           $scope.seeVisaProcess.isDisplay = 3;
           for (var i = 0; i < visaManagerService.allProcess.length; i++) {
             let groupVisa = visaManagerService.allProcess[i];
             if(groupVisa.id == visaProcessId) {
-              
-              $scope.references = groupVisa.process;
-              // console.log($scope.references.process)
+              for (var j = 0; j < groupVisa.process.length; j++) {
+                var process = groupVisa.process[j].get();
+                process.items = groupVisa.process[j].items;
+                
+                $scope.references.push(process);
+              }
             }
           }
         }
@@ -189,19 +195,38 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
             },() => {console.log("error")})
         }
 
-        /* *********************************       Reviser                               */
 
+
+        $scope.colorChanged = function () {
+            console.log("yes");
+        }
         
         $scope.getDate = function(id) {
           let mod = FileSystem._objects[id];
           if(mod) {
             return mod.load((data) => {
-              // // return data.date.get()
-              // console.log(data);
-              return Date.now();
+              return data.date.get();
             })
           }
         }
+        
+        
+        $scope.ChangeItemProcess = (item,newPriority) => {
+            // let mod = FileSystem._objects[item];
+            // console.log(newPriority);
+            // if(mod) {
+            //   mod._info.visaProcessPlugin.load((data) => {
+            //     visaManagerService.deleteItem(item,data.groupId.get(),data.processId.get(),data.priority.get());
+            //     visaManagerService.addItem(item,data.groupId.get(),data.processId.get(),newPriority);
+            //   })              
+            // }
+        }
+
+        $scope.colorPicker = (evt) => {
+          evt.stopPropagation();
+        }
+
+
 
         $scope.folderDropCfg = {
           "drop": (event) => {

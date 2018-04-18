@@ -11,14 +11,14 @@
         <md-dialog-content class="myContainer">
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Group Visa Process</label>
-                <md-select ng-model="visaSelected.groupId" ng-change="SelectChanged()">
+                <md-select ng-disabled="groupProcess.length == 0" ng-model="visaSelected.groupId" ng-change="SelectChanged()">
                     <md-option ng-repeat="group in groupProcess" value="{{group.id}}">
                     {{group.name}}
                     </md-option>
                 </md-select>
             </md-input-container>
 
-            <div ng-if="display">
+            <!-- <div ng-if="display">
                 <div ng-if="stateVisaProcess.currentState != null"><span>current state : </span> <span style="text-align: right">{{getStateName(stateVisaProcess.currentState)}}</span></div>
                 <div ng-if="stateVisaProcess.precedentState != null"><span>Precedent state : </span> <spanstyle="text-align: right">{{getStateName(stateVisaProcess.precedentState)}}</span></div>
                 <div ng-if="stateVisaProcess.nextState != null"><span>next state : </span> <span style="text-align: right">{{getStateName(stateVisaProcess.nextState)}}</span></div>
@@ -26,26 +26,26 @@
 
             <md-button ng-if="!disableButton.precedent" class="md-raised md-primary" ng-click="precedent()">Precedent</md-button>
             <md-button ng-if="!disableButton.next" class="md-raised md-primary" ng-click="next()">Next</md-button>
-            <md-button ng-if="!disableButton.add" class="md-raised md-primary" ng-click="add()">Add</md-button>
+            <md-button ng-if="!disableButton.add" class="md-raised md-primary" ng-click="add()">Add</md-button> -->
 
-            <!-- <md-input-container class="md-block" flex-gt-sm>
+            <md-input-container class="md-block" flex-gt-sm>
                 <label>Visa Process</label>
-                <md-select ng-disabled="isDisabled" ng-model="visaSelected.processId">
-                    <md-option ng-repeat="process in processes.process" value="{{process.id}}">
+                <md-select ng-model="visaSelected.priority" ng-change="SelectChanged()">
+                    <md-option ng-repeat="process in processes.process" value="{{process.priority}}">
                         <ng-md-icon icon="label" ng-attr-style="fill: {{process.color}};height: 24px;"></ng-md-icon>
                         {{process.name}}
                     </md-option>
                 </md-select>
-            </md-input-container> -->
+            </md-input-container>
         </md-dialog-content>
 
         <md-dialog-actions layout="row">
             <md-button ng-click="cancel()">
             Cancel
             </md-button>
-            <!-- <md-button ng-click="answer()" class="md-primary">
-            OK
-            </md-button> -->
+            <md-button ng-click="answer()" class="md-primary">
+                OK
+            </md-button>
         </md-dialog-actions>
 
     </form>
