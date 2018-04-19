@@ -16,7 +16,7 @@ var VisaGroupModel = class VisaGroupModel extends Model {
         this.add_attr({
             id : newGuid(),
             name : '',
-            process : []
+            process : new Directory()
         });
     }
 };
@@ -31,7 +31,7 @@ var ProcessModel = class ProcessModel extends Model {
             id : newGuid(),
             name : '',
             color: '',
-            items : [],
+            items : new Directory(),
             priority : argPriority
         });
     }

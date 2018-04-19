@@ -30,16 +30,16 @@
             <md-list-item  ng-if="allVisaProcess.length > 0" ng-repeat="visaProcess in allVisaProcess" ng-click="viewAllProcess(visaProcess)">
                 <p>{{visaProcess.name}}</p>
 
-                <md-button class="i_btn" aria-label="remove_item" ng-click="deleteGroupVisa(visaProcess.id)">
+                <md-button class="i_btn" aria-label="remove_item" ng-click="deleteGroupVisa(visaProcess._info.id)">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </md-button>
 
-                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDetail(visaProcess.id)">
+                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDetail(visaProcess._info.id)">
                     <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
                 </md-button>
 
                 <!--********************************  Revoir ****************************-->
-                <md-button class="i_btn" aria-label="remove_item" ng-click="renameGroupProcess(visaProcess.id)">
+                <md-button class="i_btn" aria-label="remove_item" ng-click="renameGroupProcess(visaProcess._info.id)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </md-button>
 
@@ -73,19 +73,19 @@
 
     <md-list>
         <!-- ng-click="seeAllItems(process)" -->
-        <md-list-item ng-if="seeVisaProcess.visaselected.process.length > 0" ng-repeat="process in seeVisaProcess.visaselected.process | orderBy : priority" > 
+        <md-list-item ng-if="seeVisaProcess.visaselected.length > 0" ng-repeat="process in seeVisaProcess.visaselected" > 
             <p ng-click="seeAllItems(process)" class="flex">{{process.name}}</p>
 
             <!-- <md-button colorpicker ng-model="process.color" class="color_pick" ng-attr-style="background : {{process.color}}" name="{{process.id}}" aria-label="Select Color"></md-button> -->
             <!-- <md-button> -->
-                <input colorpicker ng-model="color" ng-change="colorChanged()" id="color{{process.priority}}" type='color' value="{{process.color}}" style="background : transparent; border: 0px;width: 60px;height: 30px;"  />
+                <input colorpicker ng-model="color" ng-change="colorChanged()" id="color{{process._info.priority}}" type='color' value="{{process._info.color}}" style="background : transparent; border: 0px;width: 60px;height: 30px;"  />
             <!-- </md-button> -->
 
-            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.visaselected.id,process.id,process.priority)">
+            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.visaselected._info.id,process._info.id,process._info.priority)">
                 <i class="fa fa-trash" aria-hidden="true"></i>
             </md-button>
             
-            <md-button class="i_btn" aria-label="rename_item" ng-click="renameProcess(process.id)">
+            <md-button class="i_btn" aria-label="rename_item" ng-click="renameProcess(process._info.id)">
                 <i class="fa fa-pencil" aria-hidden="true"></i>
             </md-button>
             

@@ -11,7 +11,7 @@
             
             <md-input-container>
                 <label>Name</label>
-                <input ng-model="name">
+                <input ng-model="name" required>
             </md-input-container>
 
             <md-input-container class="md-block" flex-gt-sm>
@@ -31,7 +31,7 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Visa Process</label>
                 <md-select ng-model="visaS">
-                    <md-option ng-repeat="process in processList" value="{{process.priority}}">
+                    <md-option ng-repeat="process in processList" value="{{process._info.priority}}">
                         {{process.name}}
                     </md-option>
                 </md-select>
