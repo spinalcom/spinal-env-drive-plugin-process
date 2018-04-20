@@ -37,19 +37,26 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
             
             /******************************************************************************** */
 
-            $scope.getIdByPriority = function(themeId,priority) {
+            $scope.getIdByPriority = function(themeId,priority,callback) {
                 
+                var x;
                 for (var i = 0; i < $scope.groupProcess.length; i++) {
                     let myGroupProcess = $scope.groupProcess[i];
-                    if(myGroupProcess.id == themeId) {
-                        for (var j = 0; j < myGroupProcess.process.length; j++) {
-                            let myProcess = myGroupProcess.process[j];
-                            if(myProcess.priority == priority) {
-                                return myProcess.id.get();
-                            }
-                        }
+                    if(myGroupProcess._info.id == themeId) {
+                        
+                        myGroupProcess.load((data) => {
+                            for (var j = 0; j < data.length; j++) {
+                                if(data[j]._info.priority.get() == priority) {
+                                    callback(data[j]._info.id.get());                                   
+                                }
+                            }                            
+                        })
+
+                        
+
                     }
                 }
+
             }
 
             /*********************************************************************************** */
@@ -58,6 +65,7 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
             $scope.groupProcess = visaManagerService.allProcess;
             $scope.visaSelected = {groupId : '0', processId : '0',priority : 0 };
             
+
             if(mod._info.visaProcessPlugin) {
                 mod._info.visaProcessPlugin.load((data) => {
                     $scope.visaSelected = data.get();
@@ -65,19 +73,14 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
 
                     for (var i = 0; i < visaManagerService.allProcess.length; i++) {
                         let process = visaManagerService.allProcess[i];
-                        if(process.id.get() == data.groupId.get()) {
-                            $scope.processes = process.get();
+                        if(process._info.id.get() == data.groupId.get()) {
+                            process.load((m) => {
+                                $scope.processes = m;
+                            });
                         }
                     }
 
                 })               
-
-                // for (var i = 0; i < $scope.groupProcess.length; i++) {
-                //     let process = $scope.groupProcess[i];
-                //     if(process.id == $scope.visaSelected.groupId) {
-                //         $scope.processes = process.get();
-                //     }
-                // }
  
             }
             
@@ -92,15 +95,17 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
 
                 for (var i = 0; i < $scope.groupProcess.length; i++) {
                     let process = $scope.groupProcess[i];
-                    if(process.id == $scope.visaSelected.groupId) {
-                        $scope.processes = process.get();
+                    if(process._info.id.get() == $scope.visaSelected.groupId) {
+                        process.load((m) => {
+                            $scope.processes = m;
+                        });
                     }
                 }
-
-                $scope.visaSelected.processId = $scope.getIdByPriority($scope.visaSelected.groupId,$scope.visaSelected.priority);                
-
-                console.log("new",$scope.visaSelected);
-                console.log("old",$scope.oldVisaData);                
+                
+                $scope.getIdByPriority($scope.visaSelected.groupId,$scope.visaSelected.priority,(data) => {
+                    $scope.visaSelected.processId = data;
+                });                
+               
 
                 // $scope.stateVisaProcess = {precedentState : null,currentState : null, nextState : null}
                 

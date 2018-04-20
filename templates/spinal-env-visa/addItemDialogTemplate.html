@@ -12,7 +12,7 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Group Visa Process</label>
                 <md-select ng-disabled="groupProcess.length == 0" ng-model="visaSelected.groupId" ng-change="SelectChanged()">
-                    <md-option ng-repeat="group in groupProcess" value="{{group.id}}">
+                    <md-option ng-repeat="group in groupProcess" value="{{group._info.id}}">
                     {{group.name}}
                     </md-option>
                 </md-select>
@@ -31,8 +31,8 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Visa Process</label>
                 <md-select ng-model="visaSelected.priority" ng-change="SelectChanged()">
-                    <md-option ng-repeat="process in processes.process" value="{{process.priority}}">
-                        <ng-md-icon icon="label" ng-attr-style="fill: {{process.color}};height: 24px;"></ng-md-icon>
+                    <md-option ng-repeat="process in processes" value="{{process._info.priority}}">
+                        <ng-md-icon icon="label" ng-attr-style="fill: {{process._info.color}};height: 24px;"></ng-md-icon>
                         {{process.name}}
                     </md-option>
                 </md-select>

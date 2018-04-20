@@ -7,6 +7,8 @@ angular.module("app.spinal-panel")
             let factory = {}
 
 
+            factory.allProcess;
+
 
             authService.wait_connect();
 
@@ -35,7 +37,6 @@ angular.module("app.spinal-panel")
                     }
                     
                 }
-
                 factory.allProcess = new Directory();
                 data.add_file("__process__",factory.allProcess,{id : factory.newGuid(),model_type : "Directory"});
 
@@ -126,41 +127,170 @@ angular.module("app.spinal-panel")
             }
 
             factory.deleteProcess = (groupProcessId,processId,priority) => {
+                
                 for (var i = 0; i < factory.allProcess.length; i++) {
                     var groupProcess = factory.allProcess[i];
-                    console.log("groupProcess._info.id",groupProcess._info.id)
-                    console.log("groupProcessId",groupProcessId)
-                    if(groupProcess._info.id == groupProcessId) {
-                        console.log("condition vraie !!")
+
+                    if(groupProcess._info.id.get() == groupProcessId) {
+                        var x;
                         groupProcess.load((data) => {
                             for (var j = 0; j < data.length; j++) {
-                               if(data[j]._info.id == processId) {
-                                    data.splice(j,1);                        
-                                }
 
-                                if(data[j]._info.priority > priority) {
+                                if(data[j]._info.priority.get() > priority) {
                                     data[j]._info.priority.set(data[j]._info.priority.get() - 1);
+                                } 
+
+                                if(data[j]._info.id.get() == processId) {
+                                    x = j;
                                 }
                             }
+
+                            data.splice(x,1);
+
                         })
+
                         
+                                                  
                     }
+                        
                 }
+                
             }
 
             factory.deleteGroupProcess = (groupProcessId) => {
+                console.log()
                 for (var i = 0; i < factory.allProcess.length; i++) {
                     let groupProcess = factory.allProcess[i];
                     if(groupProcess._info.id == groupProcessId) {
-                        console.log("condition true !!");
-                        factory.allProcess.load((data) => {
-                            data.splice(i,1);
-                        })
+                        factory.allProcess.splice(i,1);
+
                         break;
                     }
                 }
             }
             
+            factory.addItem = (item,groupId,processId,priority) => {
+            
+                let mod = FileSystem._objects[item];
+                
+                if(mod) {
+    
+                    if(mod._info.visaProcessPlugin) {
+                        mod._info.visaProcessPlugin.load((data) => {
+                            data.groupId.set(groupId);
+                            data.processId.set(processId);
+                            data.priority.set(priority);
+                            data.date.set(Date.now());
+                        })
+                    } else {
+                        factory.items = new StateModel(priority);
+                        factory.items.groupId.set(groupId);
+                        factory.items.processId.set(processId);
+                        factory.items.priority.set(priority);
+                        factory.items.date.set(Date.now());
+    
+                        mod._info.add_attr({
+                            visaProcessPlugin: new Ptr(factory.items)
+                        })
+
+                        
+                    }    
+                
+                    for (var i = 0; i < factory.allProcess.length; i++) {
+                        var groupVisa = factory.allProcess[i]
+                        if(groupVisa._info.id.get() == groupId) {
+
+                            groupVisa.load((data) => {
+                                for (var j = 0; j < data.length; j++) {
+                                    if(data[j]._info.id.get() == processId) {
+                                        data[j].load((m) => {
+                                            m.push(mod)
+                                        })
+                                    }
+                                }
+                            })
+    
+                            break;
+                        }
+                    }
+                }
+        
+            }
+                           
+            factory.deleteItem = (item,groupId,processId,priority) => {
+
+                let mod = FileSystem._objects[item];
+                if(mod) {
+    
+                    for (var i = 0; i < factory.allProcess.length; i++) {
+                        var groupVisa = factory.allProcess[i]
+                        if(groupVisa._info.id.get() == groupId) {
+                            // for (var j = 0; j < groupVisa.process.length; j++) {
+                            //     var process = groupVisa.process[j];
+                            //     if(process.priority == priority) {
+                            //         var itemList = factory.allProcess[i].process[j].items;
+                            //         for (var k = 0; k < itemList.length; k++) {
+                            //             if(itemList[k]._server_id == item) {
+                            //                 factory.allProcess[i].process[j].items.splice(k,1);
+                            //                 break;
+                            //             }
+                            //         }
+                            //     }
+                            // }
+
+                            groupVisa.load((data) => {
+                                for (var j = 0; j < data.length; j++) {
+                                    if(data[j]._info.priority.get() == priority) {
+                                        data[j].load((m) => {
+                                            for (var k = 0; k < m.length; k++) {
+                                                if(m[k]._server_id == item){
+                                                    m.splice(k,1);
+                                                }
+                                            }
+                                        })
+                                    }
+                                    break;
+                                }
+                            })
+    
+                            break;
+                        }
+                    }
+    
+                    // if(mod._info.visaProcessPlugin) {
+                    //     mod._info.visaProcessPlugin.load((data) => {
+                    //         for (var i = 0; i < data.length; i++) {
+                    //             var x = data[i];
+    
+                    //             if(x.groupId.get() == groupId && x.priority.get() == priority) {
+                    //                 console.log("all condition exact")
+                    //                 data.splice(i,1);
+                    //                 break;
+                    //             }
+                    //         }
+                    //     })
+                    // }
+    
+                    
+                    
+                } else {
+                    console.log("mod null")
+                }
+    
+    
+            }
+
+
+            
+
+
+
+
+
+
+
+
+
 
             return factory;
 

@@ -34,7 +34,7 @@
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </md-button>
 
-                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDetail(visaProcess._info.id)">
+                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDetail(visaProcess)">
                     <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
                 </md-button>
 
@@ -74,14 +74,14 @@
     <md-list>
         <!-- ng-click="seeAllItems(process)" -->
         <md-list-item ng-if="seeVisaProcess.visaselected.length > 0" ng-repeat="process in seeVisaProcess.visaselected" > 
-            <p ng-click="seeAllItems(process)" class="flex">{{process.name}}</p>
+            <p ng-click="seeAllItems(seeVisaProcess.visaselected,process)" class="flex">{{process.name}}</p>
 
             <!-- <md-button colorpicker ng-model="process.color" class="color_pick" ng-attr-style="background : {{process.color}}" name="{{process.id}}" aria-label="Select Color"></md-button> -->
             <!-- <md-button> -->
                 <input colorpicker ng-model="color" ng-change="colorChanged()" id="color{{process._info.priority}}" type='color' value="{{process._info.color}}" style="background : transparent; border: 0px;width: 60px;height: 30px;"  />
             <!-- </md-button> -->
 
-            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.visaselected._info.id,process._info.id,process._info.priority)">
+            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.selectId,process._info.id,process._info.priority)">
                 <i class="fa fa-trash" aria-hidden="true"></i>
             </md-button>
             
@@ -109,39 +109,60 @@
         </md-button>
     </div>
 
-    <md-list>
-        <md-list-item ng-if="seeVisaProcess.processSelected.items.length > 0" ng-repeat="item in seeVisaProcess.processSelected.items">
-            <p>{{item.name}}</p>
+    <div>
+        <h3 ng-style="{color: iColor}">{{iName}}</h3>
 
-            <md-menu md-offset="35 0">
-                <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : process.color, width: '40px', height: '20px'}">
-                </md-button>
-                
-                <md-menu-content>
-                    <md-menu-item ng-repeat="argProcess in references">
-            
-                    <md-button aria-label="Fermer" ng-click="">
-                        <ng-md-icon icon="label" ng-style="{fill : argProcess.color,height: '24px'}"></ng-md-icon>
-                        <span class="truncate">{{argProcess.name}}</span>
-                    </md-button>
-            
-            
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
+        <table style="table-layout: fixed; min-width: 400px; width: 100%;">
+            <thead style=" border-bottom: 1px solid #ddd;">
+                <tr style="height: 25px; border-top: 1px;">
+                    <th style="width: 25%;">Name</th>
+                    <th style="width: 25%;">States</th>
+                    <th style="width: 25%;">Date</th>
+                    <th style="width: 25%;"></th>
+                </tr>
+            </thead>
 
-            <!-- <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item)">
-                <i class="fa fa-trash" aria-hidden="true"></i>
-            </md-button> -->
+            <tbody>
+                <tr ng-if="seeVisaProcess.processSelected.length > 0" ng-repeat="item in seeVisaProcess.processSelected track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                    <td>{{item.name}}</td>
+                    <td>
+                        <md-menu md-offset="35 0">
+                                <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : iColor, width: '40px', height: '20px'}">
+                                </md-button>
+                                
+                                <md-menu-content>
+                                    <md-menu-item ng-repeat="argProcess in allOtherProcess">
+                            
+                                    <md-button aria-label="Fermer" ng-click="">
+                                        <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
+                                        <span class="truncate">{{argProcess.name}}</span>
+                                    </md-button>
+                            
+                            
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                    </td>
+                    <td>{{getDate(item._info.visaProcessPlugin._server_id) | date:"MM/dd/yyyy" }}</td>
+                    <td></td>
+                </tr>
 
-        </md-list-item>
+                <tr ng-if="reference.items.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                    <td>No item</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
 
-        <md-list-item ng-if="seeVisaProcess.processSelected.items.length == 0">
-            No item found
-        </md-list-item>
-    </md-list>
+            </tbody>
+
+        </table>
+    </div>
+
 </div>
 
+
+<!--************************************** See References *******************************************-->
 <div ng-if="seeVisaProcess.isDisplay == 3">
     <div class="header">
         <md-button ng-click="goBack('home')">
@@ -151,8 +172,8 @@
         </md-button>
     </div>
 
-    <div class="details" ng-repeat="reference in references">
-        <h3 ng-style="{color: reference.color}">{{reference.name}}</h3>
+    <div class="details" ng-repeat="reference in references track by $index">
+        <h3 ng-style="{color: reference._info.color}">{{reference.name}}</h3>
 
         <table style="table-layout: fixed; min-width: 400px; width: 100%;">
             <thead style=" border-bottom: 1px solid #ddd;">
@@ -164,18 +185,18 @@
             </thead>
 
             <tbody>
-                <tr ng-if="reference.items.length > 0" ng-repeat="item in reference.items" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                <tr ng-repeat="item in getItems(reference) track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
                     <td>{{item.name}}</td>
                     <td>
                         <md-menu md-offset="35 0">
-                            <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : reference.color, width: '40px', height: '20px'}">
+                            <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : reference._info.color, width: '40px', height: '20px'}">
                             </md-button>
                             
                             <md-menu-content>
-                                <md-menu-item ng-repeat="argProcess in references">
+                                <md-menu-item ng-repeat="argProcess in references track by $index">
                         
                                 <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,argProcess.priority)">
-                                    <ng-md-icon icon="label" ng-style="{fill : argProcess.color,height: '24px'}"></ng-md-icon>
+                                    <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
                                     <span class="truncate">{{argProcess.name}}</span>
                                 </md-button>
                         
@@ -197,41 +218,6 @@
 
         </table>
 
-        <!-- <table style="table-layout: fixed; min-width: 400px; width: 94%; max-height: 100%; margin-left:3%; margin-right: 3%">
-            <thead style=" border-bottom: 1px solid #ddd;">
-              <tr style="height: 25px; border-top: 1px;">
-                <th style="width: 33%;">Name</th>
-                <th style="width: 33%;">States</th>
-                <th style="width: 33%;">Date</th>
-              </tr>
-            </thead>
-
-            <tbody ng-repeat="process in references">
-              <tr ng-if="process.items.length > 0" ng-repeat="item in process.items" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
-                <td>{{item.name}}</td>
-                <td>
-                    <md-menu md-offset="35 0">
-                        <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : process.color, width: '40px', height: '20px'}">
-                        </md-button>
-                        
-                        <md-menu-content>
-                            <md-menu-item ng-repeat="argProcess in references">
-                    
-                            <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._info.visaProcessPlugin._server_id,argProcess.priority)">
-                                <ng-md-icon icon="label" ng-style="{fill : argProcess.color,height: '24px'}"></ng-md-icon>
-                                <span class="truncate">{{argProcess.name}}</span>
-                            </md-button>
-                    
-                    
-                            </md-menu-item>
-                        </md-menu-content>
-                    </md-menu>
-                </td>
-
-                <td>{{getDate(item) | date:"MM/dd/yyyy 'at' h:mma" }}</td>
-              </tr>
-            </tbody>
-        </table> -->
     </div>   
 
 </div>

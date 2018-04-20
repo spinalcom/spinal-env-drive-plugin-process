@@ -153,6 +153,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
 
         $scope.deleteVisaProcess = (groupProcessId,processId,priority) => {
+
           var dialog = $mdDialog.confirm()
             .ok("Delete !")
             .title('Do you want to remove it?')
@@ -161,7 +162,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
             $mdDialog.show(dialog)
             .then((result) => {
-              visaManagerService.deleteProcess(groupProcessId,processId,priority);
+              visaManagerService.deleteProcess(groupProcessId.get(),processId.get(),priority.get());
             },() => {console.log("error")})
         }
 
@@ -195,18 +196,25 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
 
 
-        $scope.seeAllItems = (argProcess) => {
+        $scope.seeAllItems = (visaselected,argProcess) => {
+          $scope.allOtherProcess = [];
+
+          for (var i = 0; i < visaselected.length; i++) {
+            if(visaselected[i]._info.priority.get() != argProcess._info.priority.get()) {
+              $scope.allOtherProcess.push(visaselected[i].get());
+            }
+          }
+          
           $scope.seeVisaProcess.isDisplay += 1;
 
-          for (var i = 0; i < $scope.seeVisaProcess.visaselected.process.length; i++) {
-            var process = $scope.seeVisaProcess.visaselected.process[i];
+          $scope.seeVisaProcess.processSelected = [];
 
-            if(process.id == argProcess.id) {
-              $scope.seeVisaProcess.processSelected = argProcess;
-              break;
-            }
+          $scope.iColor = argProcess._info.color.get();
+          $scope.iName = argProcess.name.get();
 
-          }
+          argProcess.load((data) => {
+            $scope.seeVisaProcess.processSelected = data;
+          })
 
         }
         
@@ -227,21 +235,22 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
 
 
-        $scope.SeeDetail = (visaProcessId) => {
-
-          $scope.references = [];
+        $scope.SeeDetail = (visaProcess) => {
 
           $scope.seeVisaProcess.isDisplay = 3;
-          for (var i = 0; i < visaManagerService.allProcess.length; i++) {
-            let groupVisa = visaManagerService.allProcess[i];
-            if(groupVisa.id == visaProcessId) {
-              for (var j = 0; j < groupVisa.process.length; j++) {
-                var process = groupVisa.process[j].get();
-                process.items = groupVisa.process[j].items;
-                
-                $scope.references.push(process);
-              }
-            }
+          
+          visaProcess.load((data) => {
+            $scope.references = data;
+          })
+
+        }
+
+
+        $scope.getItems = () => {
+          $scope.references.items = [];
+          console.log($scope.references)
+          for (var i = 0; i < $scope.references.length; i++) {
+            
           }
         }
 
