@@ -11,6 +11,7 @@
         width: 100%;
         padding: 3%;
     }
+
 </style>
 
 
@@ -100,7 +101,7 @@
 
 <!-- *************************************  See Items  ********************************************** -->
 
-<div ng-if="seeVisaProcess.isDisplay == 2" >
+<div class="details" ng-if="seeVisaProcess.isDisplay == 2" >
     <div class="header">
         <md-button ng-click="goBack()">
             <i class="fa fa-arrow-left"></i>
@@ -147,7 +148,7 @@
                     <td></td>
                 </tr>
 
-                <tr ng-if="reference.items.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                <tr ng-if="seeVisaProcess.processSelected.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
                     <td>No item</td>
                     <td></td>
                     <td></td>
@@ -185,7 +186,7 @@
             </thead>
 
             <tbody>
-                <tr ng-repeat="item in getItems(reference) track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                <tr ng-if="reference.items.length > 0" ng-repeat="item in reference.items track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
                     <td>{{item.name}}</td>
                     <td>
                         <md-menu md-offset="35 0">
@@ -195,7 +196,7 @@
                             <md-menu-content>
                                 <md-menu-item ng-repeat="argProcess in references track by $index">
                         
-                                <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,argProcess.priority)">
+                                <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,argProcess._info.priority)">
                                     <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
                                     <span class="truncate">{{argProcess.name}}</span>
                                 </md-button>

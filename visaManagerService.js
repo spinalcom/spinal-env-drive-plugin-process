@@ -7,10 +7,9 @@ angular.module("app.spinal-panel")
             let factory = {}
 
 
-            factory.allProcess;
-
-
             authService.wait_connect();
+
+
 
 
             factory.newGuid = () => {
@@ -23,6 +22,16 @@ angular.module("app.spinal-panel")
                 return guid;
             };
 
+            factory.loadItem = (item) => {
+                return new Promise((resolve,reject) => {
+                    item.load((data) => {
+                        resolve(data)
+                    },() => {
+                        reject("error");
+                    })
+                })
+            }
+
 
             ngSpinalCore.load_root()
             .then((data) => {
@@ -33,7 +42,9 @@ angular.module("app.spinal-panel")
                         data[i].load((m) => {
                             factory.allProcess = m;
                         })
+                        
                         return;
+                        
                     }
                     
                 }
@@ -61,10 +72,6 @@ angular.module("app.spinal-panel")
             }
 
             factory.addProcessInGroup = (groupId,name,place,priority) => {
-                console.log("groupId ==>",groupId);
-                console.log("name ==>",name);
-                console.log("place ==>",place);
-                console.log("priority ==>",priority);
                 
                 var myPriority;
     
@@ -102,27 +109,7 @@ angular.module("app.spinal-panel")
                         }
 
                     }                    
-                    
-                    // for (var i = 0; i < factory.allProcess.length; i++) {
-                    //     let visaProcess = factory.allProcess[i];
     
-                    //     if(visaProcess_.info.id == groupId) {
-    
-                    //         for (var j = 0; j < visaProcess.process.length; j++) {
-                                
-                    //             console.log("visaProcess.process[j].priority",visaProcess.process[j].priority.get())
-                    //             console.log("myPriority",myPriority);
-    
-                    //             if(visaProcess.process[j].priority.get() >= myPriority) {
-                    //                 console.log("condition true");
-                    //                 factory.allProcess[i].process[j].priority.set(parseInt(factory.allProcess[i].process[j].priority) + 1);
-                    //             }
-                    //         }
-    
-                    //         factory.allProcess[i].process.push(newVisaProcess);
-                    //         break;
-                    //     }
-                    // }
                 }
             }
 
@@ -225,61 +212,65 @@ angular.module("app.spinal-panel")
                     for (var i = 0; i < factory.allProcess.length; i++) {
                         var groupVisa = factory.allProcess[i]
                         if(groupVisa._info.id.get() == groupId) {
-                            // for (var j = 0; j < groupVisa.process.length; j++) {
-                            //     var process = groupVisa.process[j];
-                            //     if(process.priority == priority) {
-                            //         var itemList = factory.allProcess[i].process[j].items;
-                            //         for (var k = 0; k < itemList.length; k++) {
-                            //             if(itemList[k]._server_id == item) {
-                            //                 factory.allProcess[i].process[j].items.splice(k,1);
-                            //                 break;
-                            //             }
-                            //         }
-                            //     }
-                            // }
+                            console.log("condition 1 exacte !")
 
-                            groupVisa.load((data) => {
-                                for (var j = 0; j < data.length; j++) {
-                                    if(data[j]._info.priority.get() == priority) {
-                                        data[j].load((m) => {
-                                            for (var k = 0; k < m.length; k++) {
-                                                if(m[k]._server_id == item){
-                                                    m.splice(k,1);
-                                                }
-                                            }
-                                        })
+                            // factory.allProcess[i].load((data) => {
+
+                        
+                            factory.loadItem(groupVisa)
+                                .then((data1) => {
+                                    for(var j = 0; j < data1.length; j++) {
+                                        if(data1[j]._info.priority.get() == priority) {
+                                            
+                                            factory.loadItem(data1[j])
+                                                .then((data2) => {
+                                                    for (var k = 0; k < data2.length; k++) {
+                                                        if(data2[k]._server_id == item){
+                                                            console.log('condition 3 exacte !')
+                                                            data2.splice(k,1);
+                                                            console.log("item deleted !");
+                                                        }
+                                                    }
+                                                })
+
+                                            break;
+                                        }
                                     }
-                                    break;
-                                }
-                            })
-    
-                            break;
-                        }
-                    }
-    
-                    // if(mod._info.visaProcessPlugin) {
-                    //     mod._info.visaProcessPlugin.load((data) => {
-                    //         for (var i = 0; i < data.length; i++) {
-                    //             var x = data[i];
-    
-                    //             if(x.groupId.get() == groupId && x.priority.get() == priority) {
-                    //                 console.log("all condition exact")
-                    //                 data.splice(i,1);
-                    //                 break;
-                    //             }
-                    //         }
-                    //     })
-                    // }
-    
-                    
-                    
-                } else {
-                    console.log("mod null")
-                }
-    
-    
-            }
+                                })
+                        //         console.log("data",data)
 
+                        //         console.log(data.length)
+                                
+                        //         for (var j = 0; j < data.length; j++) {
+                        //             console.log(data[j]);
+                        //             if(data[j]._info.priority.get() == priority) {
+                        //                 console.log("condition 2 exacte !")
+                        //                 data[j].load((m) => {
+                        //                     for (var k = 0; k < m.length; k++) {
+                        //                         if(m[k]._server_id == item){
+                        //                             console.log('condition 3 exacte !')
+                        //                             m.splice(k,1);
+                        //                             console.log("item deleted !");
+                        //                         }
+                        //                     }
+                        //                 })
+                        //             }
+                        //             break;
+                        //         }
+                        //     })
+    
+                        //     break;
+                        // }     
+                        break;
+                    
+                    } 
+        
+        
+                }
+            } else {
+                console.log("mod null")
+            }
+        }
 
             
 

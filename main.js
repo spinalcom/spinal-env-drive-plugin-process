@@ -1,4 +1,4 @@
-require("./spectrum");
+
 require("spinal-env-drive-core");
 require("./models");
 require("./visaManagerService");

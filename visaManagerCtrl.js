@@ -12,6 +12,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
         visaManagerService.allProcess.bind(() => {
           $scope.allVisaProcess = visaManagerService.allProcess;
+          $scope.$apply();
         })
 
 
@@ -144,7 +145,6 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
 
 
-
 /*                                                Reviser                                                                 */
 
        
@@ -181,6 +181,10 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
           
         }
 
+
+        $scope.test = () => {
+          console.log()
+        }
 
         $scope.colorChanged = function () {
             console.log("yes");
@@ -238,20 +242,30 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         $scope.SeeDetail = (visaProcess) => {
 
           $scope.seeVisaProcess.isDisplay = 3;
-          
-          visaProcess.load((data) => {
-            $scope.references = data;
-          })
+            visaManagerService.loadItem(visaProcess)
+              .then((data1) => {
 
-        }
+                $scope.references = data1.get();
+                
+                var promises = [];
+
+                for(var i = 0; i < data1.length; i++) {
+                  promises.push(visaManagerService.loadItem(data1[i]));
+                }
 
 
-        $scope.getItems = () => {
-          $scope.references.items = [];
-          console.log($scope.references)
-          for (var i = 0; i < $scope.references.length; i++) {
-            
-          }
+                Promise.all(promises)
+                  .then((values) => {
+                      for(var i = 0; i < values.length; i++) {
+                        $scope.references[i].items = values[i];
+                      }
+                  })
+
+
+              },() => {
+                console.log("error !");
+              })
+
         }
 
 
