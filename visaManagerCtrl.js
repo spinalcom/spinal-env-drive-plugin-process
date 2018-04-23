@@ -144,13 +144,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
           }, () => { });
         }
 
-
 /*                                                Reviser                                                                 */
-
-       
-        $scope.deleteItem = (item) => {
-                  
-        }
 
         $scope.deleteVisaProcess = (groupProcessId,processId,priority) => {
 
@@ -166,7 +160,6 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
             },() => {console.log("error")})
         }
 
-
         $scope.deleteGroupVisa = (groupVisaId) => {
           var dialog = $mdDialog.confirm()
             .ok("Delete !")
@@ -181,10 +174,6 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
           
         }
 
-
-        $scope.test = () => {
-          console.log()
-        }
 
         $scope.colorChanged = function () {
             console.log("yes");
@@ -223,7 +212,21 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
         
         
-        $scope.ChangeItemProcess = (item,newPriority) => {
+        $scope.ChangeItemProcess = (item,process,newPriority) => {
+
+         
+
+          var oldPriority = process._info.priority;
+          var processId = process._info.id;
+          var groupId = $scope.seeVisaProcess.visaselected._info.id.get();
+
+
+          if(oldPriority != newPriority) {
+            visaManagerService.deleteItem(item,groupId,processId,oldPriority);
+            visaManagerService.addItem(item,groupId,processId,newPriority);
+          }
+
+
             // let mod = FileSystem._objects[item];
             // console.log(newPriority);
             // if(mod) {
@@ -238,10 +241,12 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
           evt.stopPropagation();
         }
 
-
         $scope.SeeDetail = (visaProcess) => {
 
           $scope.seeVisaProcess.isDisplay = 3;
+          $scope.seeVisaProcess.visaselected = visaProcess;
+
+
             visaManagerService.loadItem(visaProcess)
               .then((data1) => {
 
@@ -267,7 +272,6 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
               })
 
         }
-
 
 
         // $scope.folderDropCfg = {

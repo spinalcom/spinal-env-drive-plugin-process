@@ -196,7 +196,7 @@
                             <md-menu-content>
                                 <md-menu-item ng-repeat="argProcess in references track by $index">
                         
-                                <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,argProcess._info.priority)">
+                                <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,reference,argProcess._info.priority)">
                                     <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
                                     <span class="truncate">{{argProcess.name}}</span>
                                 </md-button>
