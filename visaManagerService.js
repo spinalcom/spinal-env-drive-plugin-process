@@ -1,16 +1,48 @@
 
 angular.module("app.spinal-panel")
-    .factory("visaManagerService",["ngSpinalCore","authService",
-        function(ngSpinalCore,authService) {
+    .factory("visaManagerService",["ngSpinalCore","authService","$q",
+        function(ngSpinalCore,authService,$q) {
 
 
             let factory = {}
 
+            var initQ;
+
+
+            factory.init = () => {
+                if(initQ) {
+                   return initQ.promise; 
+                }
+                initQ = $q.defer()
+                ngSpinalCore.load_root()
+                .then((data) => {
+                    
+    
+                    for (var i = 0; i < data.length; i++) {
+                        if(data[i].name.get() == "__process__") {
+                            data[i].load((m) => {
+                                factory.allProcess = m;
+                                initQ.resolve(m)
+                            })
+                            
+                            return;
+                            
+                        }
+                        
+                    }
+                    factory.allProcess = new Directory();
+                    data.add_file("__process__",factory.allProcess,{id : factory.newGuid(),model_type : "Directory"});
+                    initQ.resolve(factory.allProcess);
+    
+    
+                },() => {
+                })
+    
+                return initQ.promise
+            }
 
             authService.wait_connect();
-
-
-
+            factory.init()
 
             factory.newGuid = () => {
                 var d = new Date().getTime();
@@ -32,30 +64,6 @@ angular.module("app.spinal-panel")
                 })
             }
 
-
-            ngSpinalCore.load_root()
-            .then((data) => {
-                
-
-                for (var i = 0; i < data.length; i++) {
-                    if(data[i].name.get() == "__process__") {
-                        data[i].load((m) => {
-                            factory.allProcess = m;
-                        })
-                        
-                        return;
-                        
-                    }
-                    
-                }
-                factory.allProcess = new Directory();
-                data.add_file("__process__",factory.allProcess,{id : factory.newGuid(),model_type : "Directory"});
-
-
-            },() => {
-            })
-
-
             factory.addGroupProcess = (name) => {
 
                 var visaGroup = new Directory();
@@ -64,9 +72,10 @@ angular.module("app.spinal-panel")
                 var processValid = new Directory();
                 var processWarning = new Directory();
 
-                visaGroup.add_file("Valid",processValid,{id : factory.newGuid(),priority : 2,color : "#008348"});
+                
                 visaGroup.add_file("not valid",processInvalid,{id : factory.newGuid(),priority : 0, color : "#F21B2C" });
                 visaGroup.add_file("Validation in progress",processWarning,{id : factory.newGuid(),priority : 1, color : "#FFEB56" });
+                visaGroup.add_file("Valid",processValid,{id : factory.newGuid(),priority : 2,color : "#008348"});
 
                 factory.allProcess.add_file(name,visaGroup,{id : factory.newGuid()});
             }
@@ -83,8 +92,6 @@ angular.module("app.spinal-panel")
     
     
                 if(myPriority != undefined) {
-                    
-                    console.log("my priority not null");
 
                     for (var i = 0; i < factory.allProcess.length; i++) {
                         var visaProcess = factory.allProcess[i];
@@ -93,9 +100,9 @@ angular.module("app.spinal-panel")
 
 
                         if(visaProcess._info.id.get() == groupId.get()) {
-                            console.log("condition exact");
+
                             visaProcess.load((data) => {
-                                console.log("data",data);
+
                                 for (var k = 0; k < data.length; k++) {
                                     if(data[k]._info.priority.get() >= myPriority) {
                                         data[k]._info.priority.set(parseInt(data[k]._info.priority.get()) + 1);
@@ -145,7 +152,6 @@ angular.module("app.spinal-panel")
             }
 
             factory.deleteGroupProcess = (groupProcessId) => {
-                console.log()
                 for (var i = 0; i < factory.allProcess.length; i++) {
                     let groupProcess = factory.allProcess[i];
                     if(groupProcess._info.id == groupProcessId) {
@@ -161,13 +167,21 @@ angular.module("app.spinal-panel")
                 let mod = FileSystem._objects[item];
                 
                 if(mod) {
+
+                    if(mod._info.visaPluginDate) {
+                        mod._info.visaPluginDate.set(Date.now());
+                    } else {
+                        mod._info.add_attr({
+                            visaPluginDate : Date.now()
+                        })
+                    }
     
                     if(mod._info.visaProcessPlugin) {
                         mod._info.visaProcessPlugin.load((data) => {
                             data.groupId.set(groupId);
                             data.processId.set(processId);
                             data.priority.set(priority);
-                            data.date.set(Date.now());
+                            
                         })
                     } else {
                         factory.items = new StateModel(priority);
@@ -212,7 +226,6 @@ angular.module("app.spinal-panel")
                     for (var i = 0; i < factory.allProcess.length; i++) {
                         var groupVisa = factory.allProcess[i]
                         if(groupVisa._info.id.get() == groupId) {
-                            console.log("condition 1 exacte !")
 
                             // factory.allProcess[i].load((data) => {
 
@@ -225,10 +238,8 @@ angular.module("app.spinal-panel")
                                             factory.loadItem(data1[j])
                                                 .then((data2) => {
                                                     for (var k = 0; k < data2.length; k++) {
-                                                        if(data2[k]._server_id == item){
-                                                            console.log('condition 3 exacte !')
+                                                        if(data2[k]._server_id == item){                                                    
                                                             data2.splice(k,1);
-                                                            console.log("item deleted !");
                                                         }
                                                     }
                                                 })
@@ -237,30 +248,7 @@ angular.module("app.spinal-panel")
                                         }
                                     }
                                 })
-                        //         console.log("data",data)
-
-                        //         console.log(data.length)
-                                
-                        //         for (var j = 0; j < data.length; j++) {
-                        //             console.log(data[j]);
-                        //             if(data[j]._info.priority.get() == priority) {
-                        //                 console.log("condition 2 exacte !")
-                        //                 data[j].load((m) => {
-                        //                     for (var k = 0; k < m.length; k++) {
-                        //                         if(m[k]._server_id == item){
-                        //                             console.log('condition 3 exacte !')
-                        //                             m.splice(k,1);
-                        //                             console.log("item deleted !");
-                        //                         }
-                        //                     }
-                        //                 })
-                        //             }
-                        //             break;
-                        //         }
-                        //     })
-    
-                        //     break;
-                        // }     
+   
                         break;
                     
                     } 
@@ -272,267 +260,22 @@ angular.module("app.spinal-panel")
             }
         }
 
+            factory.changeColor = (groupId,processId,priority,val) => {
+
+                for (var i = 0; i < factory.allProcess.length; i++) {
+                    if(factory.allProcess[i]._info.id == groupId) {
+                        factory.loadItem(factory.allProcess[i])
+                            .then((data1) => {
+                                for (var j = 0; j < data1.length; j++) {
+                                    if(data1[j]._info.id == processId && data1[j]._info.priority.get() == priority) {
+                                        data1[j]._info.color.set(val);
+                                    }
+                                }                                
+                            })                        
+                    }
+                }
+            }
             
-
-
-
-
-
-
-
-
-
-
             return factory;
 
         }])
-
-
-
-
-
-
-
-// angular.module("app.spinal-panel")
-//     .factory("visaManagerService",["ngSpinalCore","authService",
-//     function(ngSpinalCore,authService) {
-//         let factory = {}
-
-//         authService.wait_connect();
-
-//         factory.allProcess = new Lst();
-
-//         ngSpinalCore.load("/__process__/")
-//             .then((data) => {
-//                 factory.allProcess.set(data);
-//             },() => {
-//                 ngSpinalCore.store(factory.allProcess,"/__process__/");
-//             })
-
-
-
-//         factory.addGroupProcess = (name) => {
-//             var visaGroup = new VisaGroupModel();
-//             visaGroup.name.set(name);
-
-//             var processValid = new ProcessModel(2);
-//             processValid.name.set("Valid");
-//             processValid.color.set("#008348");
-
-//             var processWarning = new ProcessModel(1);
-//             processWarning.name.set("Validation in progress");
-//             processWarning.color.set("#FFEB56");
-
-//             var processInvalid = new ProcessModel(0);
-//             processInvalid.name.set("Invalid");
-//             processInvalid.color.set("#F21B2C");
-
-//             visaGroup.process.push(processInvalid);
-//             visaGroup.process.push(processWarning);
-//             visaGroup.process.push(processValid);
-
-//             factory.allProcess.push(visaGroup);
-//         }
-
-        
-//         factory.addProcessInGroup = (groupId,name,place,priority) => {
-//             var myPriority = null;
-
-//             if(place == '0') {
-//                 myPriority = parseInt(priority);
-//             } else if(place == '1') {
-//                 myPriority = parseInt(priority) + 1;
-//             }        
-            
-            
-//             console.log(myPriority)
-
-
-//             if(myPriority != null) {
-//                 var newVisaProcess = new ProcessModel(myPriority);
-//                 newVisaProcess.name.set(name);
-//                 newVisaProcess.color.set("#000000");
-
-                
-//                 for (var i = 0; i < factory.allProcess.length; i++) {
-//                     let visaProcess = factory.allProcess[i];
-
-//                     if(visaProcess.id == groupId) {
-
-//                         for (var j = 0; j < visaProcess.process.length; j++) {
-                            
-//                             console.log("visaProcess.process[j].priority",visaProcess.process[j].priority.get())
-//                             console.log("myPriority",myPriority);
-
-//                             if(visaProcess.process[j].priority.get() >= myPriority) {
-//                                 console.log("condition true");
-//                                 factory.allProcess[i].process[j].priority.set(parseInt(factory.allProcess[i].process[j].priority) + 1);
-//                             }
-//                         }
-
-//                         factory.allProcess[i].process.push(newVisaProcess);
-//                         break;
-//                     }
-//                 }
-//             }
-//         }
-
-
-//         factory.deleteGroupProcess = (groupProcessId) => {
-//             for (var i = 0; i < factory.allProcess.length; i++) {
-//                 let groupProcess = factory.allProcess[i];
-//                 if(groupProcess.id == groupProcessId) {
-//                     factory.allProcess.splice(i,1);
-//                     break;
-//                 }
-//             }
-//         }
-        
-
-//         factory.deleteProcess = (groupProcessId,processId,priority) => {
-//             for (var i = 0; i < factory.allProcess.length; i++) {
-//                 var groupProcess = factory.allProcess[i];
-//                 if(groupProcess.id == groupProcessId) {
-//                     for (var j = 0; j < groupProcess.process.length; j++) {
-//                         let process = groupProcess.process[j];
-//                         if(process.id == processId) {
-//                             factory.allProcess[i].process.splice(j,1);
-//                         }
-
-//                         if(process.priority > priority) {
-//                             factory.allProcess[i].process[j].priority.set(parseInt(factory.allProcess[i].process[j].priority) - 1)
-//                         }
-                        
-//                     }
-//                     break;
-//                 }
-//             }
-//         }
-
-
-//         factory.addItem = (item,groupId,processId,priority) => {
-            
-//             let mod = FileSystem._objects[item];
-//             if(mod) {
-//                 // if(mod.visaProcessPlugin == undefined) {
-//                 //     mod.add_attr({
-//                 //         visaProcessPlugin : new Ptr(factory.itemList)
-//                 //     })
-//                 // } else {
-//                 //     mod.load((m) => {
-//                 //         factory.itemList = m;
-//                 //     })
-//                 // }
-
-//                 // factory.itemList.push({visaGroupId : groupId,visaProcessId : processId})
-
-//                 if(mod._info.visaProcessPlugin) {
-//                     mod._info.visaProcessPlugin.load((data) => {
-                        
-
-//                         data.groupId.set(groupId);
-//                         data.processId.set(processId);
-//                         data.priority.set(priority);
-//                         data.date.set(Date.now());
-
-//                         // var myItem = new StateModel(priority);
-//                         // myItem.groupId.set(groupId);
-//                         // myItem.processId.set(processId);
-//                         // myItem.priority.set(priority);
-//                         // myItem.date.set(Date.now());
-//                         // data.push(myItem);
-//                     })
-//                 } else {
-//                     // factory.items = new Lst();
-
-//                     factory.items = new StateModel(priority);
-//                     factory.items.groupId.set(groupId);
-//                     factory.items.processId.set(processId);
-//                     factory.items.priority.set(priority);
-//                     factory.items.date.set(Date.now());
-
-//                     mod._info.add_attr({
-//                         visaProcessPlugin: new Ptr(factory.items)
-//                     })
-//                     // var myItem = new StateModel(priority);
-//                     // myItem.groupId.set(groupId);
-//                     // myItem.processId.set(processId);
-//                     // myItem.date.set(Date.now());
-
-//                     // factory.items.push(myItem);
-                    
-//                 }    
-            
-//                 for (var i = 0; i < factory.allProcess.length; i++) {
-//                     var groupVisa = factory.allProcess[i]
-//                     if(groupVisa.id == groupId) {
-//                         for (var j = 0; j < groupVisa.process.length; j++) {
-//                             var process = groupVisa.process[j];
-//                             if(process.id == processId) {
-//                                 factory.allProcess[i].process[j].items.push(mod);
-//                                 break;
-//                             }
-//                         }
-
-//                         break;
-//                     }
-//                 }
-//             }
-   
-//         }
-
-
-//         factory.deleteItem = (item,groupId,processId,priority) => {
-
-
-            
-
-//             let mod = FileSystem._objects[item];
-//             if(mod) {
-
-//                 for (var i = 0; i < factory.allProcess.length; i++) {
-//                     var groupVisa = factory.allProcess[i]
-//                     if(groupVisa.id == groupId) {
-//                         for (var j = 0; j < groupVisa.process.length; j++) {
-//                             var process = groupVisa.process[j];
-//                             if(process.priority == priority) {
-//                                 var itemList = factory.allProcess[i].process[j].items;
-//                                 for (var k = 0; k < itemList.length; k++) {
-//                                     if(itemList[k]._server_id == item) {
-//                                         factory.allProcess[i].process[j].items.splice(k,1);
-//                                         break;
-//                                     }
-//                                 }
-//                             }
-//                         }
-
-//                         break;
-//                     }
-//                 }
-
-//                 // if(mod._info.visaProcessPlugin) {
-//                 //     mod._info.visaProcessPlugin.load((data) => {
-//                 //         for (var i = 0; i < data.length; i++) {
-//                 //             var x = data[i];
-
-//                 //             if(x.groupId.get() == groupId && x.priority.get() == priority) {
-//                 //                 console.log("all condition exact")
-//                 //                 data.splice(i,1);
-//                 //                 break;
-//                 //             }
-//                 //         }
-//                 //     })
-//                 // }
-
-               
-               
-//             } else {
-//                 console.log("mod null")
-//             }
-
-
-//         }
-        
-//         return factory;
-
-//     }])

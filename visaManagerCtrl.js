@@ -2,19 +2,21 @@
 (function(){
 
 angular.module('app.spinal-panel')
-.controller('VisaManagerCtrl',["$scope","$templateCache","$mdDialog","ngSpinalCore","visaManagerService",
-function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
+.controller('VisaManagerCtrl',["$scope","$templateCache","$mdDialog","ngSpinalCore","visaManagerService","spinalFileSystem",
+function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spinalFileSystem) {
 
         $scope.seeVisaProcess = {visaselected : null,selectId : null, processSelected : null, isDisplay : 0};
 
         $scope.references;
         $scope.color;
+        let init = visaManagerService.init()
 
-        visaManagerService.allProcess.bind(() => {
-          $scope.allVisaProcess = visaManagerService.allProcess;
-          $scope.$apply();
+        init.then(()=>{
+          visaManagerService.allProcess.bind(() => {
+            $scope.allVisaProcess = visaManagerService.allProcess;
+            $scope.$apply();
+          })
         })
-
 
         $scope.addGroupProcess = () => {
             $mdDialog.show($mdDialog.prompt()
@@ -39,6 +41,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
             visaProcess.load((data) => {
               $scope.seeVisaProcess.visaselected = data;
+              $scope.$apply();
             })
         }
 
@@ -145,7 +148,6 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
         }
 
 /*                                                Reviser                                                                 */
-
         $scope.deleteVisaProcess = (groupProcessId,processId,priority) => {
 
           var dialog = $mdDialog.confirm()
@@ -174,23 +176,11 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
           
         }
 
-
-        $scope.colorChanged = function () {
-            console.log("yes");
-        }
-        
-        $scope.getDate = function(id) {
-          let mod = FileSystem._objects[id];
-          if(mod) {
-            return mod.load((data) => {
-              return data.date.get();
-            })
-          }
-        }
-
-
         $scope.seeAllItems = (visaselected,argProcess) => {
           $scope.allOtherProcess = [];
+          $scope.argProcessSelected = argProcess.get();
+          // $scope.seeVisaProcess.visaselected = visaselected;
+
 
           for (var i = 0; i < visaselected.length; i++) {
             if(visaselected[i]._info.priority.get() != argProcess._info.priority.get()) {
@@ -207,38 +197,30 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
           argProcess.load((data) => {
             $scope.seeVisaProcess.processSelected = data;
+            $scope.$apply();
           })
 
         }
-        
-        
-        $scope.ChangeItemProcess = (item,process,newPriority) => {
+       
+        $scope.ChangeItemProcess = (item,oldProcess,newProcess) => {
 
-         
+          var oldPriority = oldProcess._info.priority;
+          var oldProcessId = oldProcess._info.id;
 
-          var oldPriority = process._info.priority;
-          var processId = process._info.id;
-          var groupId = $scope.seeVisaProcess.visaselected._info.id.get();
-
-
-          if(oldPriority != newPriority) {
-            visaManagerService.deleteItem(item,groupId,processId,oldPriority);
-            visaManagerService.addItem(item,groupId,processId,newPriority);
+          if($scope.seeVisaProcess.selectId != null) {
+            var oldGroupId = $scope.seeVisaProcess.selectId.get();
+          } else {
+            var oldGroupId = $scope.seeVisaProcess.visaselected._info.get();
           }
 
+          var newPriority = newProcess._info.priority;
+          var newProcessId = newProcess._info.id;          
 
-            // let mod = FileSystem._objects[item];
-            // console.log(newPriority);
-            // if(mod) {
-            //   mod._info.visaProcessPlugin.load((data) => {
-            //     visaManagerService.deleteItem(item,data.groupId.get(),data.processId.get(),data.priority.get());
-            //     visaManagerService.addItem(item,data.groupId.get(),data.processId.get(),newPriority);
-            //   })              
-            // }
-        }
+          if(oldPriority != newPriority) {
+            visaManagerService.deleteItem(item,oldGroupId,oldProcessId,oldPriority);
+            visaManagerService.addItem(item,oldGroupId,newProcessId,newPriority);
+          }
 
-        $scope.colorPicker = (evt) => {
-          evt.stopPropagation();
         }
 
         $scope.SeeDetail = (visaProcess) => {
@@ -264,6 +246,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
                       for(var i = 0; i < values.length; i++) {
                         $scope.references[i].items = values[i];
                       }
+                      $scope.$apply();
                   })
 
 
@@ -273,16 +256,25 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService) {
 
         }
 
+    
+
 
         // $scope.folderDropCfg = {
         //   "drop": (event) => {
         //     event.stopPropagation(); 
         //     event.preventDefault();
-        //     console.log("drop")
+
+        //     $scope.seeVisaProcess.isDisplay = 4;          
+
         //     let selected = spinalFileSystem.FE_selected_drag;
         //     $scope.loading = true;
-        //     if (selected && selected[0]) {
-        //       console.log("drop")
+        //     if (selected) {
+
+        //       for (var i = 0; i < selected.length; i++) {
+        //         console.log(selected[i])
+        //       }
+
+        //       // console.log("drop");
         //       // $scope.fs_path = Array.from(spinalFileSystem.FE_fspath_drag);
         //       // let serv_id = FileSystem._objects[selected[0]._server_id];
         //       // let logPtr = serv_id._info.log;

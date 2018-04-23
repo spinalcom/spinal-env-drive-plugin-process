@@ -1,31 +1,23 @@
 
 
 angular.module('app.spinal-panel')
-  .directive('colorpicker', function() {
+  .directive('colorpicker', ["visaManagerService",function(visaManagerService) {
     return {
-      require: '?ngModel',
-      link: function (scope, elem, attrs, ngModel) { 
-       
-          $(elem).spectrum({
-            clickoutFiresChange: true,
-            showInput: false,
-            showSelectionPalette : false,
-            replacerClassName : 'colorPick'
-          });
 
-          $(elem).attr("type","color");
+      link: function (scope, elem, attrs) { 
 
-          console.log("before return")
-          if (!ngModel) return;
-          console.log("after return !")
-          ngModel.$render = function () {
-            $(elem).spectrum('set', ngModel.$viewValue);
-          };
-          $(elem).on('change', function () {
-            scope.$apply(function () {
-              ngModel.$setViewValue(elem.val());
-            });
+        $(elem).on('change', function () {
+          scope.$apply(function () {
+            
+            var color = $(elem).val();
+            var groupId = $(elem).attr("groupid");
+            var processId = $(elem).attr("processid");
+            var priority = $(elem).attr("priority");
+
+            visaManagerService.changeColor(groupId,processId,priority,color);
+            
           });
+        });
       }
     }
-  })
+  }])
