@@ -217,8 +217,9 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
           var newProcessId = newProcess._info.id;          
 
           if(oldPriority != newPriority) {
-            visaManagerService.deleteItem(item,oldGroupId,oldProcessId,oldPriority);
-            visaManagerService.addItem(item,oldGroupId,newProcessId,newPriority);
+            visaManagerService.deleteItem(item,oldGroupId,oldProcessId,oldPriority,() => {
+              visaManagerService.addItem(item,oldGroupId,newProcessId,newPriority);
+            });
           }
 
         }
@@ -257,7 +258,32 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
         }
 
     
+        $scope.deleteItem = (item,ptr_id) => {
+          var dialog = $mdDialog.confirm()
+            .ok("Delete !")
+            .title('Do you want to remove it?')
+            .cancel('Cancel')
+            .clickOutsideToClose(true);
 
+          let mod = FileSystem._objects[ptr_id];
+
+          if(mod) {
+            visaManagerService.loadItem(mod)
+              .then((val) => {
+                $mdDialog.show(dialog)
+                  .then((result) => {
+                    visaManagerService.deleteItem(item,val.groupId.get(),val.processId.get(),val.priority.get(),() => {
+                      $scope.$apply();
+                    });
+                    // $scope.$apply();          
+                  },() => {})
+                })
+          } else {
+            console.log("error");
+            
+          }
+
+        }
 
         // $scope.folderDropCfg = {
         //   "drop": (event) => {

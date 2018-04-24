@@ -130,8 +130,10 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
       }).then((result) => {
             
             if(result.oldValue) {
-                visaManagerService.deleteItem(obj.file._server_id,result.oldValue.groupId,result.oldValue.processId,result.oldValue.priority);
-                visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
+                visaManagerService.deleteItem(obj.file._server_id,result.oldValue.groupId,result.oldValue.processId,result.oldValue.priority,() => {
+                    visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
+                });
+                
             } else {
                 visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
             }

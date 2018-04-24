@@ -218,7 +218,7 @@ angular.module("app.spinal-panel")
         
             }
                            
-            factory.deleteItem = (item,groupId,processId,priority) => {
+            factory.deleteItem = (item,groupId,processId,priority,callback) => {
 
                 let mod = FileSystem._objects[item];
                 if(mod) {
@@ -240,6 +240,8 @@ angular.module("app.spinal-panel")
                                                     for (var k = 0; k < data2.length; k++) {
                                                         if(data2[k]._server_id == item){                                                    
                                                             data2.splice(k,1);
+                                                            mod._info.rem_attr("visaProcessPlugin")
+                                                            callback();
                                                         }
                                                     }
                                                 })
