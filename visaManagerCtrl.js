@@ -1,4 +1,5 @@
 
+
 (function(){
 
 angular.module('app.spinal-panel')

@@ -1,4 +1,9 @@
 
+/**
+ * SpinalDrive_App_FileExplorer_addItem
+ * @extends {SpinalDrive_App}
+ */
+
 angular.module("app.spinal-panel")
     .factory("visaManagerService",["ngSpinalCore","authService","$q",
         function(ngSpinalCore,authService,$q) {
@@ -8,6 +13,48 @@ angular.module("app.spinal-panel")
 
             var initQ;
 
+
+            factory.addFolder = (item,groupId,processId,priority) => {
+                /*       Create Date           */
+                if(item._info.visaPluginDate) {
+                    item._info.visaPluginDate.set(Date.now());
+                } else {
+                    item._info.add_attr({
+                        visaPluginDate : Date.now()
+                    })
+                }
+                
+                if(item._info.visaProcessPlugin) {
+                    item._info.visaProcessPlugin.load((data) => {
+                        data.groupId.set(groupId);
+                        data.processId.set(processId);
+                        data.priority.set(priority);
+                        
+                    })
+                } else {
+                    factory.items = new StateModel(priority);
+                    factory.items.groupId.set(groupId);
+                    factory.items.processId.set(processId);
+                    factory.items.priority.set(priority);
+                    factory.items.date.set(Date.now());
+
+                    item._info.add_attr({
+                        visaProcessPlugin: new Ptr(factory.items)
+                    })
+
+                    
+                }
+
+                if(item._info.model_type.get() == "Directory") {
+                    factory.loadItem(item)
+                        .then((data1) => {
+                            for (var i = 0; i < data1.length; i++) {
+                                factory.addFolder(data1[i],groupId,processId,priority);
+                            }
+                        },() => {})
+                }
+
+            }
 
             factory.init = () => {
                 if(initQ) {
@@ -41,7 +88,8 @@ angular.module("app.spinal-panel")
                 return initQ.promise
             }
 
-            authService.wait_connect();
+            let user = authService.get_user();
+
             factory.init()
 
             factory.newGuid = () => {
@@ -165,48 +213,36 @@ angular.module("app.spinal-panel")
             factory.addItem = (item,groupId,processId,priority) => {
             
                 let mod = FileSystem._objects[item];
-                
+
+                let info = {
+                    date : Date.now(),
+                    name: user.username,
+                    action: "added to "
+                }
+
                 if(mod) {
 
-                    if(mod._info.visaPluginDate) {
-                        mod._info.visaPluginDate.set(Date.now());
-                    } else {
-                        mod._info.add_attr({
-                            visaPluginDate : Date.now()
-                        })
-                    }
-    
-                    if(mod._info.visaProcessPlugin) {
-                        mod._info.visaProcessPlugin.load((data) => {
-                            data.groupId.set(groupId);
-                            data.processId.set(processId);
-                            data.priority.set(priority);
-                            
-                        })
-                    } else {
-                        factory.items = new StateModel(priority);
-                        factory.items.groupId.set(groupId);
-                        factory.items.processId.set(processId);
-                        factory.items.priority.set(priority);
-                        factory.items.date.set(Date.now());
-    
-                        mod._info.add_attr({
-                            visaProcessPlugin: new Ptr(factory.items)
-                        })
+                    
 
-                        
-                    }    
+                    factory.addFolder(mod,groupId,processId,priority)
                 
                     for (var i = 0; i < factory.allProcess.length; i++) {
                         var groupVisa = factory.allProcess[i]
                         if(groupVisa._info.id.get() == groupId) {
-
-                            groupVisa.load((data) => {
+                            
+                            factory.loadItem(groupVisa)
+                            .then((data) => {
                                 for (var j = 0; j < data.length; j++) {
                                     if(data[j]._info.id.get() == processId) {
-                                        data[j].load((m) => {
-                                            m.push(mod)
+                                        info.action += data[j].name.get();
+                                       
+                                        factory.loadItem(data[j])
+                                        .then((data1) => {
+                                            data1.push(mod);
+                                            
+                                            SpinalDrive_App._log(mod,info);
                                         })
+
                                     }
                                 }
                             })
@@ -221,6 +257,13 @@ angular.module("app.spinal-panel")
             factory.deleteItem = (item,groupId,processId,priority,callback) => {
 
                 let mod = FileSystem._objects[item];
+
+                let info = {
+                    date : Date.now(),
+                    name: user.username,
+                    action: "deleted to "
+                }
+
                 if(mod) {
     
                     for (var i = 0; i < factory.allProcess.length; i++) {
@@ -229,18 +272,22 @@ angular.module("app.spinal-panel")
 
                             // factory.allProcess[i].load((data) => {
 
+                            console.log("condition 1 exact")
                         
                             factory.loadItem(groupVisa)
                                 .then((data1) => {
                                     for(var j = 0; j < data1.length; j++) {
                                         if(data1[j]._info.priority.get() == priority) {
-                                            
+                                            info.action += data1[j].name.get();    
+                                            console.log("condition 2 exact")
                                             factory.loadItem(data1[j])
                                                 .then((data2) => {
                                                     for (var k = 0; k < data2.length; k++) {
-                                                        if(data2[k]._server_id == item){                                                    
+                                                        if(data2[k]._server_id == item){ 
+                                                                                                          
                                                             data2.splice(k,1);
-                                                            mod._info.rem_attr("visaProcessPlugin")
+                                                            mod._info.rem_attr("visaProcessPlugin");
+                                                            SpinalDrive_App._log(mod,info);
                                                             callback();
                                                         }
                                                     }
