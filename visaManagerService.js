@@ -13,9 +13,46 @@ angular.module("app.spinal-panel")
 
             var initQ;
 
+            /* Creer l'item dans le dossier du process */
+            factory.addItemInProcess = (item,groupId,processId,priority) => {
 
-            factory.addFolder = (item,groupId,processId,priority) => {
-                /*       Create Date           */
+                let info = {
+                    date : Date.now(),
+                    name: user.username,
+                    action: "added to "
+                }
+
+                factory.addPluginInfo(item,groupId,processId,priority,() => {
+                    for (var i = 0; i < factory.allProcess.length; i++) {
+                        var groupVisa = factory.allProcess[i]
+                        if(groupVisa._info.id.get() == groupId) {
+                            
+                            factory.loadItem(groupVisa)
+                            .then((data) => {
+                                for (var j = 0; j < data.length; j++) {
+                                    if(data[j]._info.id.get() == processId) {
+                                        info.action += data[j].name.get();
+                                       
+                                        factory.loadItem(data[j])
+                                        .then((data1) => {
+                                            data1.push(item);
+                                            
+                                            SpinalDrive_App._log(item,info);
+                                        })
+    
+                                    }
+                                }
+                            })
+    
+                            break;
+                        }
+                    }
+                })
+            }
+
+            /* Ajouter les info dans le visaProcessPlugin */
+            factory.addPluginInfo = (item,groupId,processId,priority,callback) => {
+
                 if(item._info.visaPluginDate) {
                     item._info.visaPluginDate.set(Date.now());
                 } else {
@@ -29,6 +66,8 @@ angular.module("app.spinal-panel")
                         data.groupId.set(groupId);
                         data.processId.set(processId);
                         data.priority.set(priority);
+
+                        callback()
                         
                     })
                 } else {
@@ -42,19 +81,34 @@ angular.module("app.spinal-panel")
                         visaProcessPlugin: new Ptr(factory.items)
                     })
 
+                    callback()
                     
                 }
+                
 
+            }
+
+
+            /* Parcourir le dossier et les sous dossier pour trouver les fichiers */
+            factory.addFolder = (item,groupId,processId,priority) => {
+                
                 if(item._info.model_type.get() == "Directory") {
                     factory.loadItem(item)
                         .then((data1) => {
                             for (var i = 0; i < data1.length; i++) {
-                                factory.addFolder(data1[i],groupId,processId,priority);
+                                if(data1[i]._info.model_type.get() == "Directory") {
+                                    factory.addFolder(data1[i],groupId,processId,priority);
+                                } else {
+                                    factory.addItemInProcess(data1[i],groupId,processId,priority)
+                                }
                             }
                         },() => {})
-                }
-
+                }            
             }
+
+
+
+
 
             factory.init = () => {
                 if(initQ) {
@@ -214,42 +268,15 @@ angular.module("app.spinal-panel")
             
                 let mod = FileSystem._objects[item];
 
-                let info = {
-                    date : Date.now(),
-                    name: user.username,
-                    action: "added to "
-                }
-
                 if(mod) {
 
-                    
-
-                    factory.addFolder(mod,groupId,processId,priority)
-                
-                    for (var i = 0; i < factory.allProcess.length; i++) {
-                        var groupVisa = factory.allProcess[i]
-                        if(groupVisa._info.id.get() == groupId) {
-                            
-                            factory.loadItem(groupVisa)
-                            .then((data) => {
-                                for (var j = 0; j < data.length; j++) {
-                                    if(data[j]._info.id.get() == processId) {
-                                        info.action += data[j].name.get();
-                                       
-                                        factory.loadItem(data[j])
-                                        .then((data1) => {
-                                            data1.push(mod);
-                                            
-                                            SpinalDrive_App._log(mod,info);
-                                        })
-
-                                    }
-                                }
-                            })
-    
-                            break;
-                        }
+                    if(mod._info.model_type == "Directory") {
+                        factory.addFolder(mod,groupId,processId,priority);
+                    } else {
+                        factory.addItemInProcess(mod,groupId,processId,priority);
                     }
+                
+                    
                 }
         
             }

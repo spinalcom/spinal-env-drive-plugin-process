@@ -211,11 +211,12 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
           if($scope.seeVisaProcess.selectId != null) {
             var oldGroupId = $scope.seeVisaProcess.selectId.get();
           } else {
-            var oldGroupId = $scope.seeVisaProcess.visaselected._info.get();
+            var oldGroupId = $scope.seeVisaProcess.visaselected._info.id.get();
           }
 
           var newPriority = newProcess._info.priority;
           var newProcessId = newProcess._info.id;          
+
 
           if(oldPriority != newPriority) {
             visaManagerService.deleteItem(item,oldGroupId,oldProcessId,oldPriority,() => {
