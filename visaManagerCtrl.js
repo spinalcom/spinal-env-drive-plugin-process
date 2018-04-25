@@ -143,7 +143,9 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
           .then(function (result) {
 
             var id = $scope.seeVisaProcess.selectId;
-            visaManagerService.addProcessInGroup(id,result.name,result.place,result.priority);
+            visaManagerService.addProcessInGroup(id,result.name,result.place,result.priority,() => {
+              $scope.$apply();
+            });
 
           }, () => { });
         }

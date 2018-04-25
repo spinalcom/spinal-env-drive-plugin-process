@@ -81,8 +81,7 @@
         </div>
 
         <md-list>
-            <!-- ng-click="seeAllItems(process)" -->
-            <md-list-item ng-if="seeVisaProcess.visaselected.length > 0" ng-repeat="process in seeVisaProcess.visaselected" > 
+            <md-list-item ng-if="seeVisaProcess.visaselected.length > 0" ng-repeat="process in seeVisaProcess.visaselected | orderBy: 'process._info.priority'" > 
                 <p ng-click="seeAllItems(seeVisaProcess.visaselected,process)" class="flex">{{process.name}}</p>
 
                 <input colorpicker type='color' name='color'  groupid="{{seeVisaProcess.selectId}}"  processid="{{process._info.id}}" priority="{{process._info.priority}}"  id="color{{process._info.priority}}" value="{{process._info.color}}" style="background : transparent; border: 0px;width: 60px;height: 30px;"/>

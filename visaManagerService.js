@@ -99,15 +99,27 @@ angular.module("app.spinal-panel")
                                 if(data1[i]._info.model_type.get() == "Directory") {
                                     factory.addFolder(data1[i],groupId,processId,priority);
                                 } else {
-                                    factory.addItemInProcess(data1[i],groupId,processId,priority)
+                                    let _ser_id = data1[i]._server_id
+                                    // data1[i]._info.visaProcessPlugin.load((el) => {
+                                    //     
+                                    // })
+
+                                    // if(data1[i]._info.visaProcessPlugin) {
+                                    //     factory.loadItem(data1[i]._info.visaProcessPlugin).then((el) => {
+                                    //         factory.deleteItem(_ser_id,el.groupId.get(),el.processId.get(),el.priority.get());
+                                    //     })
+                                    //     factory.addItemInProcess(data1[i],groupId,processId,priority);
+                                    // } else {
+                                        factory.addItemInProcess(data1[i],groupId,processId,priority);
+                                    // }
+                                    
+
+                                    
                                 }
                             }
                         },() => {})
                 }            
             }
-
-
-
 
 
             factory.init = () => {
@@ -182,7 +194,7 @@ angular.module("app.spinal-panel")
                 factory.allProcess.add_file(name,visaGroup,{id : factory.newGuid()});
             }
 
-            factory.addProcessInGroup = (groupId,name,place,priority) => {
+            factory.addProcessInGroup = (groupId,name,place,priority,callback) => {
                 
                 var myPriority;
     
@@ -213,6 +225,7 @@ angular.module("app.spinal-panel")
 
                                 data.add_file(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000"});
 
+                                callback();
                             })
 
                         }
@@ -315,7 +328,9 @@ angular.module("app.spinal-panel")
                                                             data2.splice(k,1);
                                                             mod._info.rem_attr("visaProcessPlugin");
                                                             SpinalDrive_App._log(mod,info);
-                                                            callback();
+
+                                                            if(callback)
+                                                                callback();
                                                         }
                                                     }
                                                 })
