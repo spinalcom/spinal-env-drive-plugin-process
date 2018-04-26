@@ -9,7 +9,7 @@
     <form ng-cloak>
         <md-dialog-content class="myContainer">
             
-            <md-input-container>
+            <md-input-container class="md-block">
                 <label>Name</label>
                 <input ng-model="name" required>
             </md-input-container>
@@ -35,6 +35,11 @@
                         {{process.name}}
                     </md-option>
                 </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Description</label>
+                <textarea ng-model="description" rows="3" md-select-on-focus></textarea>
             </md-input-container>
 
         </md-dialog-content>

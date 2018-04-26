@@ -47,6 +47,10 @@
                         <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
                     </md-button>
 
+                    <md-button class="i_btn" aria-label="template_detail" ng-click="SeeCamembert($event,visaProcess)">
+                        <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                    </md-button>
+
                     <!--********************************  Revoir ****************************-->
                     <md-button class="i_btn" aria-label="remove_item" ng-click="renameGroupProcess(visaProcess._info.id)">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -93,6 +97,11 @@
                 <md-button class="i_btn" aria-label="rename_item" ng-click="renameProcess(process._info.id)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </md-button>
+
+
+                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDescription($event,process)">
+                    <i class="fa fa-info" aria-hidden="true"></i>
+                </md-button>
                 
             </md-list-item>
 
@@ -120,10 +129,11 @@
             <table style="table-layout: fixed; min-width: 400px; width: 100%;">
                 <thead style=" border-bottom: 1px solid #ddd;">
                     <tr style="height: 25px; border-top: 1px;">
-                        <th style="width: 25%;">Name</th>
-                        <th style="width: 25%;">States</th>
-                        <th style="width: 25%;">Date</th>
-                        <th style="width: 25%;"></th>
+                        <th style="width: 20%;">Name</th>
+                        <th style="width: 20%;">States</th>
+                        <th style="width: 20%;">Path</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 20%;"></th>
                     </tr>
                 </thead>
 
@@ -148,6 +158,7 @@
                                     </md-menu-content>
                                 </md-menu>
                         </td>
+                        <td></td>
                         <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
                         <td>
                             <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
@@ -158,6 +169,7 @@
 
                     <tr ng-if="seeVisaProcess.processSelected.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
                         <td>No item</td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -184,13 +196,14 @@
         <div class="details" ng-repeat="reference in references track by $index">
             <h3 ng-style="{color: reference._info.color}">{{reference.name}}</h3>
 
-            <table style="table-layout: fixed; min-width: 400px; width: 100%;">
+            <table style="table-layout: fixed; width: 100%;">
                 <thead style=" border-bottom: 1px solid #ddd;">
                     <tr style="height: 25px; border-top: 1px;">
-                        <th style="width: 25%;">Name</th>
-                        <th style="width: 25%;">States</th>
-                        <th style="width: 25%;">Date</th>
-                        <th></th>
+                        <th style="width: 20%;">Name</th>
+                        <th style="width: 20%;">States</th>
+                        <th style="width: 20%;">Path</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 20%;"></th>
                     </tr>
                 </thead>
 
@@ -215,6 +228,7 @@
                                 </md-menu-content>
                             </md-menu>
                         </td>
+                        <td></td>
                         <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
                         <td>
                             <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
@@ -225,6 +239,7 @@
 
                     <tr ng-if="reference.items.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
                         <td>No item</td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

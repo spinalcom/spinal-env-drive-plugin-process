@@ -3,8 +3,8 @@
 (function(){
 
 angular.module('app.spinal-panel')
-.controller('VisaManagerCtrl',["$scope","$templateCache","$mdDialog","ngSpinalCore","visaManagerService","spinalFileSystem",
-function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spinalFileSystem) {
+.controller('VisaManagerCtrl',["$scope","$templateCache","$mdDialog","ngSpinalCore","visaManagerService","spinalFileSystem","$compile","$rootScope",
+function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spinalFileSystem,$compile,$rootScope) {
 
         $scope.seeVisaProcess = {visaselected : null,selectId : null, processSelected : null, isDisplay : 0};
 
@@ -116,6 +116,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
               $scope.name = "";
               $scope.place = '-1';
               $scope.visaS = '-1';
+              $scope.description = "";
               
               $scope.processList = select;
               
@@ -126,7 +127,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
     
               $scope.answer = function() {
                 if($scope.name.trim().length > 0 && $scope.place != '-1' && $scope.visaS != '-1') {
-                  var result = {name : $scope.name, place : $scope.place, priority : $scope.visaS};
+                  var result = {name : $scope.name, place : $scope.place, priority : $scope.visaS,description : $scope.description.trim()};
                   $mdDialog.hide(result);
                 } else {
                   console.log("error!!!!");
@@ -143,7 +144,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
           .then(function (result) {
 
             var id = $scope.seeVisaProcess.selectId;
-            visaManagerService.addProcessInGroup(id,result.name,result.place,result.priority,() => {
+            visaManagerService.addProcessInGroup(id,result.name,result.place,result.priority,result.description,() => {
               $scope.$apply();
             });
 
@@ -287,6 +288,82 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
             
           }
 
+        }
+
+
+        $scope.SeeDescription = (evt,visaProcess) => {
+          $mdDialog.show({
+            controller : ["$scope","$mdDialog",function addProcessCtrl($scope,$mdDialog) {
+ 
+              $scope.name = visaProcess.name.get();
+              $scope.description = visaProcess._info.description.get();
+              $scope.disabled = false;
+
+
+              $scope.cancel = function() {
+                $mdDialog.cancel()
+              }
+    
+              $scope.answer = function() {
+                  $mdDialog.hide({id : visaProcess._server_id,description : $scope.description})
+              }
+    
+            }],
+            template : $templateCache.get('seeDetailTemplate.html'),
+            parent : angular.element(document.body),
+            targetEvent : evt,
+            clickOutsideToClose : true
+          }).then((result) => {
+           let mod = FileSystem._objects[result.id];
+           if(mod) {
+             mod._info.description.set(result.description);
+           }
+          })
+        }
+
+
+        $scope.SeeCamembert = (evt,visaProcess) => {
+
+          $mdDialog.show({
+            template : $templateCache.get('chartTemplate.html'),
+            parent : angular.element(document.body),
+            targetEvent : evt,
+            clickOutsideToClose : false,
+            controller : ["$scope","$mdDialog","visaManagerService",function addProcessCtrl($scope,$mdDialog,visaManagerService) {
+              $scope.name = visaProcess.name.get();
+
+              $scope.el = {
+                data : [],
+                background : [],
+                label : []
+              }
+
+              visaManagerService.loadItem(visaProcess).then((el) => {
+                
+
+                for (var i = 0; i < el.length; i++) {
+                  $scope.el.label.push(el[i].name.get());
+                  $scope.el.background.push(el[i]._info.color.get());
+                  visaManagerService.loadItem(el[i])
+                    .then((data1) => {
+                      $scope.el.data.push(data1.length)
+                    })
+                }
+
+              })
+
+              $scope.cancel = function() {
+                $mdDialog.cancel()
+              }
+    
+              $scope.answer = function() {
+                  $mdDialog.hide();
+              }
+    
+            }]
+          }).then((el) => {
+
+          })
         }
 
         // $scope.folderDropCfg = {

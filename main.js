@@ -6,6 +6,9 @@ require("./visaManagerCtrl");
 require("./add_item");
 require("./color.directive");
 
+require("./chart");
+require("./chart.directive");
+
 
 (function () {
   angular.module('app.spinal-panel')
@@ -28,7 +31,15 @@ require("./color.directive");
         },{
           uri : '../templates/spinal-env-visa/addProcessTemplate.html',
           name : 'addProcessTemplate.html'
+        },{
+          uri : '../templates/spinal-env-visa/seeDetailTemplate.html',
+          name : 'seeDetailTemplate.html'
+        },{
+          uri : '../templates/spinal-env-visa/chartTemplate.html',
+          name : 'chartTemplate.html'
         }];
+
+
         for (var i = 0; i < toload.length; i++) {
           load_template(toload[i].uri, toload[i].name);
         }
@@ -40,7 +51,7 @@ require("./color.directive");
             isClosable: true,
             title: "Profil Visa",
             type: 'component',
-            width: 20,
+            width: 50,
             componentName: 'SpinalHome',
             componentState: {
               template: 'visa-template.html',

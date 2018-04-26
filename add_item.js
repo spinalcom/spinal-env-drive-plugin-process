@@ -117,6 +117,7 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
 
             $scope.answer = function() {
                 var result = {newValue : $scope.visaSelected, oldValue : $scope.oldVisaData};
+                console.log("addItem",result);
                 $mdDialog.hide(result);
 
             }
@@ -128,13 +129,18 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
         targetEvent : obj.evt,
         clickOutsideToClose : false
       }).then((result) => {
-            
+        
+            console.log("then executer")
+
             if(result.oldValue) {
                 visaManagerService.deleteItem(obj.file._server_id,result.oldValue.groupId,result.oldValue.processId,result.oldValue.priority,() => {
+                    console.log("old Item deleted")
                     visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
                 });
                 
             } else {
+                console.log("no old item");
+                
                 visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
             }
 

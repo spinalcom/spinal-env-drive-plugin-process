@@ -14,7 +14,7 @@ angular.module("app.spinal-panel")
             var initQ;
 
             /* Creer l'item dans le dossier du process */
-            factory.addItemInProcess = (item,groupId,processId,priority) => {
+            factory.addItemInProcess = (item,groupId,processId,priority,myPath) => {
 
                 let info = {
                     date : Date.now(),
@@ -22,7 +22,8 @@ angular.module("app.spinal-panel")
                     action: "added to "
                 }
 
-                factory.addPluginInfo(item,groupId,processId,priority,() => {
+                factory.addPluginInfo(item,groupId,processId,priority,myPath,function(){
+
                     for (var i = 0; i < factory.allProcess.length; i++) {
                         var groupVisa = factory.allProcess[i]
                         if(groupVisa._info.id.get() == groupId) {
@@ -36,6 +37,7 @@ angular.module("app.spinal-panel")
                                         factory.loadItem(data[j])
                                         .then((data1) => {
                                             data1.push(item);
+                                            console.log("item added !")
                                             
                                             SpinalDrive_App._log(item,info);
                                         })
@@ -51,7 +53,7 @@ angular.module("app.spinal-panel")
             }
 
             /* Ajouter les info dans le visaProcessPlugin */
-            factory.addPluginInfo = (item,groupId,processId,priority,callback) => {
+            factory.addPluginInfo = (item,groupId,processId,priority,myPath,callback) => {
 
                 if(item._info.visaPluginDate) {
                     item._info.visaPluginDate.set(Date.now());
@@ -66,7 +68,8 @@ angular.module("app.spinal-panel")
                         data.groupId.set(groupId);
                         data.processId.set(processId);
                         data.priority.set(priority);
-
+                        data._path.set(myPath);
+                        console.log("item _info added")
                         callback()
                         
                     })
@@ -76,11 +79,13 @@ angular.module("app.spinal-panel")
                     factory.items.processId.set(processId);
                     factory.items.priority.set(priority);
                     factory.items.date.set(Date.now());
+                    factory.items._path.set(myPath);
 
                     item._info.add_attr({
                         visaProcessPlugin: new Ptr(factory.items)
                     })
 
+                    console.log("item _info added")                    
                     callback()
                     
                 }
@@ -90,28 +95,33 @@ angular.module("app.spinal-panel")
 
 
             /* Parcourir le dossier et les sous dossier pour trouver les fichiers */
-            factory.addFolder = (item,groupId,processId,priority) => {
+            factory.addFolder = (item,groupId,processId,priority,myPath) => {
                 
                 if(item._info.model_type.get() == "Directory") {
+                    myPath += item.name.get() + "/";
+
                     factory.loadItem(item)
                         .then((data1) => {
                             for (var i = 0; i < data1.length; i++) {
                                 if(data1[i]._info.model_type.get() == "Directory") {
-                                    factory.addFolder(data1[i],groupId,processId,priority);
+                                    factory.addFolder(data1[i],groupId,processId,priority,myPath);
                                 } else {
-                                    let _ser_id = data1[i]._server_id
+                                    let _ser_id = data1[i]._server_id;
+                                    let myData = data1[i];
                                     // data1[i]._info.visaProcessPlugin.load((el) => {
                                     //     
                                     // })
 
-                                    // if(data1[i]._info.visaProcessPlugin) {
-                                    //     factory.loadItem(data1[i]._info.visaProcessPlugin).then((el) => {
-                                    //         factory.deleteItem(_ser_id,el.groupId.get(),el.processId.get(),el.priority.get());
-                                    //     })
-                                    //     factory.addItemInProcess(data1[i],groupId,processId,priority);
-                                    // } else {
-                                        factory.addItemInProcess(data1[i],groupId,processId,priority);
-                                    // }
+                                    if(data1[i]._info.visaProcessPlugin) {
+                                        factory.loadItem(data1[i]._info.visaProcessPlugin).then((el) => {
+                                            factory.deleteItem(_ser_id,el.groupId.get(),el.processId.get(),el.priority.get(),() => {
+                                                factory.addItemInProcess(myData,groupId,processId,priority,myPath);
+                                            });
+                                        })
+                                        
+                                    } else {
+                                        factory.addItemInProcess(data1[i],groupId,processId,priority,myPath);
+                                    }
                                     
 
                                     
@@ -187,14 +197,14 @@ angular.module("app.spinal-panel")
                 var processWarning = new Directory();
 
                 
-                visaGroup.add_file("not valid",processInvalid,{id : factory.newGuid(),priority : 0, color : "#F21B2C" });
-                visaGroup.add_file("Validation in progress",processWarning,{id : factory.newGuid(),priority : 1, color : "#FFEB56" });
-                visaGroup.add_file("Valid",processValid,{id : factory.newGuid(),priority : 2,color : "#008348"});
+                visaGroup.add_file("not valid",processInvalid,{id : factory.newGuid(),priority : 0, color : "#F21B2C",description : "" });
+                visaGroup.add_file("Validation in progress",processWarning,{id : factory.newGuid(),priority : 1, color : "#FFEB56",description : "" });
+                visaGroup.add_file("Valid",processValid,{id : factory.newGuid(),priority : 2,color : "#008348",description : ""});
 
                 factory.allProcess.add_file(name,visaGroup,{id : factory.newGuid()});
             }
 
-            factory.addProcessInGroup = (groupId,name,place,priority,callback) => {
+            factory.addProcessInGroup = (groupId,name,place,priority,description,callback) => {
                 
                 var myPriority;
     
@@ -223,7 +233,7 @@ angular.module("app.spinal-panel")
                                     }
                                 }
 
-                                data.add_file(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000"});
+                                data.add_file(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000",description : description});
 
                                 callback();
                             })
@@ -277,16 +287,19 @@ angular.module("app.spinal-panel")
                 }
             }
             
-            factory.addItem = (item,groupId,processId,priority) => {
+            factory.addItem = (item,groupId,processId,priority,myPath = "/") => {
             
                 let mod = FileSystem._objects[item];
 
                 if(mod) {
 
                     if(mod._info.model_type == "Directory") {
-                        factory.addFolder(mod,groupId,processId,priority);
+                        console.log("item is a directory");
+                        
+                        factory.addFolder(mod,groupId,processId,priority,myPath);
                     } else {
-                        factory.addItemInProcess(mod,groupId,processId,priority);
+                        console.log("item is not a directory");
+                        factory.addItemInProcess(mod,groupId,processId,priority,myPath);
                     }
                 
                     
@@ -311,15 +324,12 @@ angular.module("app.spinal-panel")
                         if(groupVisa._info.id.get() == groupId) {
 
                             // factory.allProcess[i].load((data) => {
-
-                            console.log("condition 1 exact")
                         
                             factory.loadItem(groupVisa)
                                 .then((data1) => {
                                     for(var j = 0; j < data1.length; j++) {
                                         if(data1[j]._info.priority.get() == priority) {
                                             info.action += data1[j].name.get();    
-                                            console.log("condition 2 exact")
                                             factory.loadItem(data1[j])
                                                 .then((data2) => {
                                                     for (var k = 0; k < data2.length; k++) {
@@ -328,9 +338,7 @@ angular.module("app.spinal-panel")
                                                             data2.splice(k,1);
                                                             mod._info.rem_attr("visaProcessPlugin");
                                                             SpinalDrive_App._log(mod,info);
-
-                                                            if(callback)
-                                                                callback();
+                                                            break;
                                                         }
                                                     }
                                                 })
@@ -346,6 +354,9 @@ angular.module("app.spinal-panel")
         
         
                 }
+
+                callback();
+
             } else {
                 console.log("mod null")
             }

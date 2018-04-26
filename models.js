@@ -47,7 +47,8 @@ var StateModel = class StateModel extends Model {
             groupId : "",
             processId : "",
             priority : argPriority,
-            date : 0
+            date : 0,
+            _path : "/"
         });
     }
 };
