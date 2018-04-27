@@ -162,7 +162,9 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
 
             $mdDialog.show(dialog)
             .then((result) => {
-              visaManagerService.deleteProcess(groupProcessId.get(),processId.get(),priority.get());
+              visaManagerService.deleteProcess(groupProcessId.get(),processId.get(),priority.get(),() => {
+                $scope.$apply();
+              });
             },() => {console.log("error")})
         }
 
@@ -347,6 +349,8 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,visaManagerService,spina
                   visaManagerService.loadItem(el[i])
                     .then((data1) => {
                       $scope.el.data.push(data1.length)
+                    },() => {
+                      $scope.el.data.push(0);
                     })
                 }
 

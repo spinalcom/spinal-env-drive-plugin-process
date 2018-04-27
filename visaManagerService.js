@@ -233,7 +233,11 @@ angular.module("app.spinal-panel")
                                     }
                                 }
 
-                                data.add_file(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000",description : description});
+                                var file = new File(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000",description : description})
+
+                                data.insert(myPriority,[file]);
+
+                                // data.add_file(name,new Directory(),{id : factory.newGuid(),priority : myPriority,color : "#000000",description : description});
 
                                 callback();
                             })
@@ -245,7 +249,7 @@ angular.module("app.spinal-panel")
                 }
             }
 
-            factory.deleteProcess = (groupProcessId,processId,priority) => {
+            factory.deleteProcess = (groupProcessId,processId,priority,callback) => {
                 
                 for (var i = 0; i < factory.allProcess.length; i++) {
                     var groupProcess = factory.allProcess[i];
@@ -265,6 +269,7 @@ angular.module("app.spinal-panel")
                             }
 
                             data.splice(x,1);
+                            callback();
 
                         })
 
