@@ -23,19 +23,19 @@ require("./chart.directive");
         };
 
         let toload = [{
-          uri: '../templates/spinal-env-visa/visa-template.html',
+          uri: '../templates/spinal-env-drive-plugin-process/visa-template.html',
           name: 'visa-template.html'
         },{
-          uri: '../templates/spinal-env-visa/addItemDialogTemplate.html',
+          uri: '../templates/spinal-env-drive-plugin-process/addItemDialogTemplate.html',
           name : 'addItemDialogTemplate.html'
         },{
-          uri : '../templates/spinal-env-visa/addProcessTemplate.html',
+          uri : '../templates/spinal-env-drive-plugin-process/addProcessTemplate.html',
           name : 'addProcessTemplate.html'
         },{
-          uri : '../templates/spinal-env-visa/seeDetailTemplate.html',
+          uri : '../templates/spinal-env-drive-plugin-process/seeDetailTemplate.html',
           name : 'seeDetailTemplate.html'
         },{
-          uri : '../templates/spinal-env-visa/chartTemplate.html',
+          uri : '../templates/spinal-env-drive-plugin-process/chartTemplate.html',
           name : 'chartTemplate.html'
         }];
 
@@ -45,11 +45,11 @@ require("./chart.directive");
         }
 
         goldenLayoutService.registerPanel({
-          id: "spinal-env-visa",
-          name: "Profil Visa",
+          id: "spinal-env-drive-plugin-process",
+          name: "Process Profil",
           cfg: {
             isClosable: true,
-            title: "Profil Visa",
+            title: "Process Profil",
             type: 'component',
             width: 50,
             componentName: 'SpinalHome',
