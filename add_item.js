@@ -10,7 +10,7 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
    */
 
     constructor() {
-        super("AddItemExplorer","Visa..","edit","Add to a visa");  
+        super("AddItemExplorer","Process..","edit","Add to a process");  
     }
 
     /**
@@ -28,12 +28,12 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
     let $mdDialog =  obj.scope.injector.get('$mdDialog');
     // let $scope =  obj.scope.injector.get('$scope');
     let $templateCache = obj.scope.injector.get('$templateCache');
-    let visaManagerService = obj.scope.injector.get('visaManagerService');
+    let ProcessManagerService = obj.scope.injector.get('ProcessManagerService');
     let mod = FileSystem._objects[obj.file._server_id];
 
     $mdDialog.show({
 
-        controller : ["$scope","$mdDialog","visaManagerService",($scope,$mdDialog,visaManagerService) => {
+        controller : ["$scope","$mdDialog","ProcessManagerService",($scope,$mdDialog,ProcessManagerService) => {
             
             /******************************************************************************** */
 
@@ -62,7 +62,7 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
             /*********************************************************************************** */
 
 
-            $scope.groupProcess = visaManagerService.allProcess;
+            $scope.groupProcess = ProcessManagerService.allProcess;
             $scope.visaSelected = {groupId : '0', processId : '0',priority : 0 };
             
 
@@ -71,8 +71,8 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
                     $scope.visaSelected = data.get();
                     $scope.oldVisaData = data.get();
 
-                    for (var i = 0; i < visaManagerService.allProcess.length; i++) {
-                        let process = visaManagerService.allProcess[i];
+                    for (var i = 0; i < ProcessManagerService.allProcess.length; i++) {
+                        let process = ProcessManagerService.allProcess[i];
                         if(process._info.id.get() == data.groupId.get()) {
                             process.load((m) => {
                                 $scope.processes = m;
@@ -133,15 +133,15 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
             console.log("then executer")
 
             if(result.oldValue) {
-                visaManagerService.deleteItem(obj.file._server_id,result.oldValue.groupId,result.oldValue.processId,result.oldValue.priority,() => {
+                ProcessManagerService.deleteItem(obj.file._server_id,result.oldValue.groupId,result.oldValue.processId,result.oldValue.priority,() => {
                     console.log("old Item deleted")
-                    visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
+                    ProcessManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
                 });
                 
             } else {
                 console.log("no old item");
                 
-                visaManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
+                ProcessManagerService.addItem(obj.file._server_id,result.newValue.groupId,result.newValue.processId,result.newValue.priority);
             }
 
 

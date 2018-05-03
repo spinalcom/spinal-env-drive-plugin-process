@@ -5,7 +5,7 @@
  */
 
 angular.module("app.spinal-panel")
-    .factory("visaManagerService",["ngSpinalCore","authService","$q",
+    .factory("ProcessManagerService",["ngSpinalCore","authService","$q",
         function(ngSpinalCore,authService,$q) {
 
 

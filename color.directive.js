@@ -1,7 +1,7 @@
 
 
 angular.module('app.spinal-panel')
-  .directive('colorpicker', ["visaManagerService",function(visaManagerService) {
+  .directive('colorpicker', ["ProcessManagerService",function(ProcessManagerService) {
     return {
 
       link: function (scope, elem, attrs) { 
@@ -14,7 +14,7 @@ angular.module('app.spinal-panel')
             var processId = $(elem).attr("processid");
             var priority = $(elem).attr("priority");
 
-            visaManagerService.changeColor(groupId,processId,priority,color);
+            ProcessManagerService.changeColor(groupId,processId,priority,color);
             
           });
         });

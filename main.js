@@ -1,8 +1,8 @@
 
 require("spinal-env-drive-core");
 require("./models");
-require("./visaManagerService");
-require("./visaManagerCtrl");
+require("./ProcessManagerService");
+require("./ProcessManagerCtrl");
 require("./add_item");
 require("./color.directive");
 
@@ -56,7 +56,7 @@ require("./chart.directive");
             componentState: {
               template: 'visa-template.html',
               module: 'app.spinal-visa',
-              controller: 'VisaManagerCtrl'
+              controller: 'ProcessManagerCtrl'
             }
           }
         });
