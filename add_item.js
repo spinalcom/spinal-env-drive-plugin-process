@@ -66,8 +66,8 @@ class SpinalDrive_App_FileExplorer_addItem extends SpinalDrive_App  {
             $scope.visaSelected = {groupId : '0', processId : '0',priority : 0 };
             
 
-            if(mod._info.visaProcessPlugin) {
-                mod._info.visaProcessPlugin.load((data) => {
+            if(mod._info.ProcessPlugin) {
+                mod._info.ProcessPlugin.load((data) => {
                     $scope.visaSelected = data.get();
                     $scope.oldVisaData = data.get();
 

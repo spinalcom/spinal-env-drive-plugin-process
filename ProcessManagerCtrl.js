@@ -21,7 +21,7 @@ function($scope, $templateCache, $mdDialog,ngSpinalCore,ProcessManagerService,sp
 
         $scope.addGroupProcess = () => {
             $mdDialog.show($mdDialog.prompt()
-            .title("Add  Group Visa Process")
+            .title("Add  Group Process")
             .placeholder('Please enter the Name')
             .ariaLabel('Add Group Visa Process')
             .clickOutsideToClose(true)

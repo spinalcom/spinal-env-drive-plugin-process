@@ -52,19 +52,19 @@ angular.module("app.spinal-panel")
                 })
             }
 
-            /* Ajouter les info dans le visaProcessPlugin */
+            /* Ajouter les info dans le ProcessPlugin */
             factory.addPluginInfo = (item,groupId,processId,priority,myPath,callback) => {
 
-                if(item._info.visaPluginDate) {
-                    item._info.visaPluginDate.set(Date.now());
+                if(item._info.ProcessPluginDate) {
+                    item._info.ProcessPluginDate.set(Date.now());
                 } else {
                     item._info.add_attr({
-                        visaPluginDate : Date.now()
+                        ProcessPluginDate : Date.now()
                     })
                 }
                 
-                if(item._info.visaProcessPlugin) {
-                    item._info.visaProcessPlugin.load((data) => {
+                if(item._info.ProcessPlugin) {
+                    item._info.ProcessPlugin.load((data) => {
                         data.groupId.set(groupId);
                         data.processId.set(processId);
                         data.priority.set(priority);
@@ -82,7 +82,7 @@ angular.module("app.spinal-panel")
                     factory.items._path.set(myPath);
 
                     item._info.add_attr({
-                        visaProcessPlugin: new Ptr(factory.items)
+                        ProcessPlugin: new Ptr(factory.items)
                     })
 
                     console.log("item _info added")                    
@@ -108,12 +108,12 @@ angular.module("app.spinal-panel")
                                 } else {
                                     let _ser_id = data1[i]._server_id;
                                     let myData = data1[i];
-                                    // data1[i]._info.visaProcessPlugin.load((el) => {
+                                    // data1[i]._info.ProcessPlugin.load((el) => {
                                     //     
                                     // })
 
-                                    if(data1[i]._info.visaProcessPlugin) {
-                                        factory.loadItem(data1[i]._info.visaProcessPlugin).then((el) => {
+                                    if(data1[i]._info.ProcessPlugin) {
+                                        factory.loadItem(data1[i]._info.ProcessPlugin).then((el) => {
                                             factory.deleteItem(_ser_id,el.groupId.get(),el.processId.get(),el.priority.get(),() => {
                                                 factory.addItemInProcess(myData,groupId,processId,priority,myPath);
                                             });
@@ -341,7 +341,7 @@ angular.module("app.spinal-panel")
                                                         if(data2[k]._server_id == item){ 
                                                                                                           
                                                             data2.splice(k,1);
-                                                            mod._info.rem_attr("visaProcessPlugin");
+                                                            mod._info.rem_attr("ProcessPlugin");
                                                             SpinalDrive_App._log(mod,info);
                                                             break;
                                                         }

@@ -159,7 +159,7 @@
                                 </md-menu>
                         </td>
                         <td></td>
-                        <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
+                        <td>{{ item._info.ProcessPluginDate.get() | date : "fullDate" }}</td>
                         <td>
                             <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
@@ -229,7 +229,7 @@
                             </md-menu>
                         </td>
                         <td></td>
-                        <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
+                        <td>{{ item._inProcess.get() | date : "fullDate" }}</td>
                         <td>
                             <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
