@@ -1,0 +1,271 @@
+
+
+<style>
+    .md-fab {   
+        width: 40px;    
+        height: 40px;   
+        padding: 0;  
+    }
+
+    .details {
+        width: 100%;
+        padding: 3%;
+    }
+
+    .md-content {
+        width: 100%;
+        height: 100%;
+    }
+
+
+</style>
+
+
+<link rel="stylesheet" href="../templates/spinal-env-visa/spectrum.css" />
+
+
+<!-- <md-content class="md-content" folder-drop folderdrop-events="folderDropCfg" ng-class="{over:dropOnFolder}"> -->
+
+    <div ng-if="seeVisaProcess.isDisplay == 0">
+        <div class="header_button">
+            <md-button class="md-fab" aria-label="add groupProcess" ng-click="addGroupProcess()">
+                <md-tooltip>Add Process</md-tooltip>
+                <ng-md-icon icon="note_add" style="fill:white; height: 24px;"></ng-md-icon>
+            </md-button>
+        </div>
+
+        <div class="visaContainer">
+            <md-list>
+                <md-list-item  ng-if="allVisaProcess.length > 0" ng-repeat="visaProcess in allVisaProcess" ng-click="viewAllProcess(visaProcess)">
+                    <p>{{visaProcess.name}}</p>
+
+                    <md-button class="i_btn" aria-label="remove_item" ng-click="deleteGroupVisa(visaProcess._info.id)">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </md-button>
+
+                    <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDetail(visaProcess)">
+                        <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
+                    </md-button>
+
+                    <md-button class="i_btn" aria-label="template_detail" ng-click="SeeCamembert($event,visaProcess)">
+                        <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                    </md-button>
+
+                    <!--********************************  Revoir ****************************-->
+                    <md-button class="i_btn" aria-label="remove_item" ng-click="renameGroupProcess(visaProcess._info.id)">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </md-button>
+
+                </md-list-item>
+                
+                <md-list-item ng-if="allVisaProcess.length == 0">
+                    No Group Visa Found !
+                </md-list-item>
+                
+            </md-list>
+        </div>
+    </div>
+
+    <!-- *************************************  See Process  ********************************************** -->
+
+    <div ng-if="seeVisaProcess.isDisplay == 1">
+        <div class="header_button">
+            <md-button class="md-fab" aria-label="add groupProcess" ng-click="addProcessInGroup($event)">
+                <md-tooltip>Add Process</md-tooltip>
+                <ng-md-icon icon="note_add" style="fill:white; height: 24px;"></ng-md-icon>
+            </md-button>
+        </div>
+
+        <div class="header_back">
+            <md-button ng-click="goBack()">
+                <i class="fa fa-arrow-left"></i>
+                &nbsp;
+                back
+            </md-button>
+        </div>
+
+        <md-list>
+            <md-list-item ng-if="seeVisaProcess.visaselected.length > 0" ng-repeat="process in seeVisaProcess.visaselected | orderBy: 'process._info.priority'" > 
+                <p ng-click="seeAllItems(seeVisaProcess.visaselected,process)" class="flex">{{process.name}}</p>
+
+                <input colorpicker type='color' name='color'  groupid="{{seeVisaProcess.selectId}}"  processid="{{process._info.id}}" priority="{{process._info.priority}}"  id="color{{process._info.priority}}" value="{{process._info.color}}" style="background : transparent; border: 0px;width: 60px;height: 30px;"/>
+
+                <md-button class="i_btn" aria-label="remove_item" ng-click="deleteVisaProcess(seeVisaProcess.selectId,process._info.id,process._info.priority)">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </md-button>
+                
+                <md-button class="i_btn" aria-label="rename_item" ng-click="renameProcess(process._info.id)">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </md-button>
+
+
+                <md-button class="i_btn" aria-label="template_detail" ng-click="SeeDescription($event,process)">
+                    <i class="fa fa-info" aria-hidden="true"></i>
+                </md-button>
+                
+            </md-list-item>
+
+            <md-list-item ng-if="seeVisaProcess.visaselected.process.length == 0">
+                No Process found !
+            </md-list-item>
+
+        </md-list>
+    </div>
+
+    <!-- *************************************  See Items  ********************************************** -->
+
+    <div class="details" ng-if="seeVisaProcess.isDisplay == 2" >
+        <div class="header">
+            <md-button ng-click="goBack()">
+                <i class="fa fa-arrow-left"></i>
+                &nbsp;
+                back
+            </md-button>
+        </div>
+
+        <div>
+            <h3 ng-style="{color: iColor}">{{iName}}</h3>
+
+            <table style="table-layout: fixed; min-width: 400px; width: 100%;">
+                <thead style=" border-bottom: 1px solid #ddd;">
+                    <tr style="height: 25px; border-top: 1px;">
+                        <th style="width: 20%;">Name</th>
+                        <th style="width: 20%;">States</th>
+                        <th style="width: 20%;">Path</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 20%;"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-if="seeVisaProcess.processSelected.length > 0" ng-repeat="item in seeVisaProcess.processSelected track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                        <td>{{item.name}}</td>
+                        <td>
+                            <md-menu md-offset="35 0">
+                                    <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : iColor, width: '40px', height: '20px'}">
+                                    </md-button>
+                                    
+                                    <md-menu-content>
+                                        <md-menu-item ng-repeat="argProcess in allOtherProcess">
+                                
+                                        <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,argProcessSelected,argProcess)">
+                                            <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
+                                            <span class="truncate">{{argProcess.name}}</span>
+                                        </md-button>
+                                
+                                
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                        </td>
+                        <td></td>
+                        <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
+                        <td>
+                            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </md-button>
+                        </td>
+                    </tr>
+
+                    <tr ng-if="seeVisaProcess.processSelected.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                        <td>No item</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+
+    <!--************************************** See References *******************************************-->
+    <div ng-if="seeVisaProcess.isDisplay == 3">
+        <div class="header">
+            <md-button ng-click="goBack('home')">
+                <i class="fa fa-arrow-left"></i>
+                &nbsp;
+                back
+            </md-button>
+        </div>
+
+        <div class="details" ng-repeat="reference in references track by $index">
+            <h3 ng-style="{color: reference._info.color}">{{reference.name}}</h3>
+
+            <table style="table-layout: fixed; width: 100%;">
+                <thead style=" border-bottom: 1px solid #ddd;">
+                    <tr style="height: 25px; border-top: 1px;">
+                        <th style="width: 20%;">Name</th>
+                        <th style="width: 20%;">States</th>
+                        <th style="width: 20%;">Path</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 20%;"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-if="reference.items.length > 0" ng-repeat="item in reference.items track by $index" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                        <td>{{item.name}}</td>
+                        <td>
+                            <md-menu md-offset="35 0">
+                                <md-button aria-label="+" ng-click="$mdMenu.open($event)" ng-style="{background : reference._info.color, width: '40px', height: '20px'}">
+                                </md-button>
+                                
+                                <md-menu-content>
+                                    <md-menu-item ng-repeat="argProcess in references track by $index">
+                            
+                                    <md-button aria-label="Fermer" ng-click="ChangeItemProcess(item._server_id,reference,argProcess)">
+                                        <ng-md-icon icon="label" ng-style="{fill : argProcess._info.color,height: '24px'}"></ng-md-icon>
+                                        <span class="truncate">{{argProcess.name}}</span>
+                                    </md-button>
+                            
+                            
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </td>
+                        <td></td>
+                        <td>{{ item._info.visaPluginDate.get() | date : "fullDate" }}</td>
+                        <td>
+                            <md-button class="i_btn" aria-label="remove_item" ng-click="deleteItem(item._server_id,item._info.visaProcessPlugin._server_id)">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </md-button>
+                        </td>
+                    </tr>
+
+                    <tr ng-if="reference.items.length == 0" style="height:30px; border-bottom: 1px solid gray; margin-left: 3%">
+                        <td>No item</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>   
+
+    </div>
+
+    <!--**************************************     Drag and Drop  ******************************************-->
+
+    <div ng-if="seeVisaProcess.isDisplay == 4">
+        <div class="header">
+            <md-button ng-click="goBack('home')">
+                <i class="fa fa-arrow-left"></i>
+                &nbsp;
+                back
+            </md-button>
+        </div>
+
+        DRAG AND DROP
+
+    </div>
+
+<!-- </md-content> -->
